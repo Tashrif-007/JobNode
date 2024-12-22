@@ -1,0 +1,17 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"  // Change this to the database you're using
+  url      = env("DATABASE_URL")  // Your database connection URL
+}
+
+model User {
+  id       Int    @id @default(autoincrement()) // Auto-incrementing primary key
+  email    String @unique 
+  name     String
+  password String
+}
