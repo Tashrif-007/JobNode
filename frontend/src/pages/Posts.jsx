@@ -15,7 +15,7 @@ const Posts = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch("http://localhost:3500/posts/getAllPosts");
+      const response = await fetch("http://localhost:3500/post/getAllPosts");
       const data = await response.json();
       setPosts(data);
     } catch (error) {
