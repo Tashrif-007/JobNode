@@ -16,8 +16,8 @@ export const createPost = async (req, res) => {
       data: {
         name,
         position,
-        salary,
-        experience,
+        salary: parseFloat(salary),
+        experience: parseInt(experience),
         location,
       },
     });
