@@ -2,10 +2,11 @@ import TextField from '@mui/material/TextField';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -48,6 +49,8 @@ const Login = () => {
             email: "",
             password: "",
         });
+        setError(null);
+        navigate("/");
         
     } catch (error) {
         console.error(error.message);
@@ -73,7 +76,7 @@ const Login = () => {
           <ColorButton variant='contained' size='large' type='submit'>Login</ColorButton>
           <div className='flex justify-between'>
             <p>Don&apos;t have an account?</p>
-            {/* <Link to='/login' className='text-blue-700'>Login</Link> */}
+            <Link to='/signup' className='text-blue-700'>Signup</Link>
           </div>
       </form>
     </div>

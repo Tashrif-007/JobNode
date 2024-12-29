@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ const SignUp = () => {
           <ColorButton variant='contained' size='large' type='submit'>SignUp</ColorButton>
           <div className='flex justify-between'>
             <p>Already have account?</p>
-            {/* <Link to='/login' className='text-blue-700'>Login</Link> */}
+            <Link to='/login' className='text-blue-700'>Login</Link>
           </div>
       </form>
     </div>
