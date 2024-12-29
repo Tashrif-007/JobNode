@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import router from './routes/auth.routes.js';
+import postRouter from './routes/post.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3500;
@@ -12,6 +13,7 @@ app.use(cors({
 }));
 
 app.use("/auth", router);
+app.use("/post", postRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
