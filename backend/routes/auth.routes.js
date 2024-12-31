@@ -8,6 +8,6 @@ router.post("/login", login);
 
 router.post("/sendResetMail", sendMail);
 
-router.post("/reset-password", resetPassword);
+router.post("/resetPassword", resetPassword);
 
 export default router;
