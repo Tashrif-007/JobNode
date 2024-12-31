@@ -126,7 +126,7 @@ export const sendMail = async (req,res) => {
             html: `
                 <p>Hello ${user.name},</p>
                 <p>You requested a password reset. Click the link below to reset your password:</p>
-                <a href="http://localhost:3000/reset-password?token=${resetToken}">Reset Password</a>
+                <a href="${process.env.FRONTEND_URL}/reset-password?token=${resetToken}">Reset Password</a>
                 <p>This link is valid for 15 minutes.</p>
             `,
         };

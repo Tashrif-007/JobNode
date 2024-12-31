@@ -78,6 +78,10 @@ const Login = () => {
             <p>Don&apos;t have an account?</p>
             <Link to='/signup' className='text-blue-700'>Signup</Link>
           </div>
+          <div className='flex justify-between'>
+            <p>Forgot Password?</p>
+            <Link to='/forgot-password' className='text-blue-700'>Reset Password</Link>
+          </div>
       </form>
     </div>
   )
