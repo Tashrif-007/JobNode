@@ -172,3 +172,19 @@ export const resetPassword = async (req,res) => {
         res.status(500).json({message: 'Server error, please try again later.'});
     }
 }
+
+export const getUserById=async(req, res)=>{
+    try {
+        const {id}=req.params;
+        const user=await prisma.User.findUnique({
+            where:{id: parseInt(id)},
+        })
+        if(!user){
+            return res.status(404).json({msg:"User not found"})
+        }
+        res.json(user);
+    } catch (error) {
+        console.error(error.message)
+        res.status(500).json({msg:"Server error"})
+    }
+}
