@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
 
 const CreatePost = () => {
   const [formData, setFormData] = useState({
@@ -12,12 +13,31 @@ const CreatePost = () => {
     experience: "",
     location: "",
     name: "",
+    skills: [],
   });
 
+  const [skillInput, setSkillInput] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSkillAdd = () => {
+    if (skillInput.trim()) {
+      setFormData((prevData) => ({
+        ...prevData,
+        skills: [...prevData.skills, skillInput.trim()],
+      }));
+      setSkillInput(""); // Clear the input after adding a skill
+    }
+  };
+
+  const handleSkillDelete = (skillToDelete) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      skills: prevData.skills.filter((skill) => skill !== skillToDelete),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -46,7 +66,7 @@ const CreatePost = () => {
         Create a New Job Post
       </Typography>
       <form onSubmit={handleSubmit}>
-      <TextField
+        <TextField
           label="Company Name"
           name="name"
           fullWidth
@@ -93,6 +113,32 @@ const CreatePost = () => {
           onChange={handleChange}
           required
         />
+        <Box sx={{ marginTop: 3 }}>
+          <TextField
+            label="Add Skill"
+            fullWidth
+            value={skillInput}
+            onChange={(e) => setSkillInput(e.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleSkillAdd}
+            sx={{ marginTop: 1 }}
+          >
+            Add Skill
+          </Button>
+          <Box sx={{ marginTop: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+            {formData.skills.map((skill, index) => (
+              <Chip
+                key={index}
+                label={skill}
+                onDelete={() => handleSkillDelete(skill)}
+                color="primary"
+              />
+            ))}
+          </Box>
+        </Box>
         <Button
           variant="contained"
           color="primary"
