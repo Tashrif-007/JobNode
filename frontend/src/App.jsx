@@ -9,7 +9,7 @@ import ResetPassword from './pages/ResetPassword';
 
 const App = () => {
   return (
-    <Router>
+    // <Router>
       <div>
         <Routes>
           <Route path='/' element={<Home />}/>
@@ -21,7 +21,7 @@ const App = () => {
           <Route path='/reset-password' element={<ResetPassword />}/>
         </Routes>
       </div>
-    </Router>
+    // </Router>
   );
 };
 
