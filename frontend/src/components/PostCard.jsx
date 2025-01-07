@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip"; // For displaying skills
 
-const PostCard = ({ position, location, salary, experience, company, skills, onLearnMore }) => {
+const PostCard = ({ position, location, salary, experience, company, skills, onApply }) => {
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
@@ -41,8 +41,9 @@ const PostCard = ({ position, location, salary, experience, company, skills, onL
           </Box>
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={onLearnMore}>
-            Learn More
+          {/* Apply button */}
+          <Button size="small" onClick={onApply}>
+            Apply
           </Button>
         </CardActions>
       </Card>

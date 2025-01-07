@@ -84,3 +84,32 @@ export const getAllPost = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getPostById = async (req, res) => {
+  const { id } = req.params; // Retrieve the ID from the URL params
+
+  try {
+    // Fetch the job post by ID, including the required skills
+    const jobPost = await prisma.jobPost.findUnique({
+      where: { id: parseInt(id) }, // Find the job post by its ID (ensure it's an integer)
+      include: {
+        requiredSkills: {
+          include: {
+            skill: true, // Include the skill details in the response
+          },
+        },
+      },
+    });
+
+    // If no job post is found with the provided ID, send a 404 error
+    if (!jobPost) {
+      return res.status(404).json({ error: 'Job post not found' });
+    }
+
+    // Return the job post with the associated skills
+    res.status(200).json(jobPost);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

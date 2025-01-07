@@ -6,6 +6,7 @@ import Posts from './pages/Posts';
 import CreatePost from './pages/CreatePost';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import "react-toastify/dist/ReactToastify.css"; // Import the default styles for toast notifications
 
 const App = () => {
   return (

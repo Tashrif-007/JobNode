@@ -17,6 +17,7 @@ model User {
   // Polymorphic relation for user types
   jobSeeker JobSeeker?
   company   Company?
+  applications Apply[]
 }
 
 model JobSeeker {
@@ -28,7 +29,6 @@ model JobSeeker {
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Relationship with skills
   requiredSkills   JobSeekerReqSkills[]
-  applications     Apply[]
 }
 
 model Company {
@@ -79,13 +79,13 @@ model JobSeekerReqSkills {
 
 model Apply {
   applicationId Int      @id @default(autoincrement())
-  jobSeekerId   Int
+  userId   Int
   jobPostId     Int
   status        String   // Can be 'Pending', 'Accepted', 'Rejected', etc.
   dateCreated   DateTime @default(now())
-
-  jobSeeker     JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  cvPath        String 
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobPost       JobPost   @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
 
-  @@unique([jobSeekerId, jobPostId]) // Ensure that a job seeker can apply only once to a specific job
+  @@unique([userId, jobPostId]) // Ensure that a job seeker can apply only once to a specific job
 }
