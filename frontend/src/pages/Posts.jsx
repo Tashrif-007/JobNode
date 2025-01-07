@@ -45,6 +45,7 @@ const Posts = () => {
             salary={post.salary}
             experience={post.experience}
             company={post.name}
+            skills={post.requiredSkills.map((reqSkill) => reqSkill.skill.name)} // Mapping skills
             onLearnMore={() => alert(`More details about ${post.position}`)}
           />
         ))}
