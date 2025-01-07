@@ -7,6 +7,7 @@ import CreatePost from './pages/CreatePost';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import "react-toastify/dist/ReactToastify.css"; // Import the default styles for toast notifications
+import ApplyPage from './pages/Apply';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path='/posts' element={<Posts />}/>
+          <Route path='/posts/apply/:id' element={<ApplyPage />}/>
           <Route path='/create-post' element={<CreatePost />}/>
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password' element={<ResetPassword />}/>
