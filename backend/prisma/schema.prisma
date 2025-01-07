@@ -28,6 +28,7 @@ model JobSeeker {
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Relationship with skills
   requiredSkills   JobSeekerReqSkills[]
+  applications     Apply[]
 }
 
 model Company {
@@ -55,6 +56,7 @@ model JobPost {
   location    String
   createdAt   DateTime  @default(now())
   requiredSkills JobPostReqSkills[]
+  applications   Apply[]
 }
 
 model JobPostReqSkills {
@@ -73,4 +75,17 @@ model JobSeekerReqSkills {
   jobSeeker JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
   skill     Skills    @relation(fields: [skillId], references: [id], onDelete: Cascade)
   @@unique([jobSeekerId, skillId])
+}
+
+model Apply {
+  applicationId Int      @id @default(autoincrement())
+  jobSeekerId   Int
+  jobPostId     Int
+  status        String   // Can be 'Pending', 'Accepted', 'Rejected', etc.
+  dateCreated   DateTime @default(now())
+
+  jobSeeker     JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  jobPost       JobPost   @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
+
+  @@unique([jobSeekerId, jobPostId]) // Ensure that a job seeker can apply only once to a specific job
 }
