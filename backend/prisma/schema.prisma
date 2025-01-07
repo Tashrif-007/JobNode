@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,10 +8,42 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   name     String
-  email    String  @unique
+  email    String   @unique
   password String
+  userType String   // Can be 'JobSeeker' or 'Company'
+
+  // Polymorphic relation for user types
+  jobSeeker JobSeeker?
+  company   Company?
+}
+
+model JobSeeker {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @unique
+  salaryExpectation Float?
+  location         String?
+  experience       Int?
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relationship with skills
+  requiredSkills   JobSeekerReqSkills[]
+}
+
+model Company {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  description String?
+  website    String?
+  techStack  String?
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Skills {
+  id               Int    @id @default(autoincrement())
+  name             String @unique
+  jobPostReqSkills JobPostReqSkills[]
+  jobSeekerReqSkills JobSeekerReqSkills[]
 }
 
 model JobPost {
@@ -28,25 +54,23 @@ model JobPost {
   experience  Int
   location    String
   createdAt   DateTime  @default(now())
-  // Define the relationship with JobPostReqSkills
   requiredSkills JobPostReqSkills[]
-}
-
-model Skills {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  // Define the relationship with JobPostReqSkills
-  jobPostReqSkills JobPostReqSkills[]
 }
 
 model JobPostReqSkills {
   id        Int     @id @default(autoincrement())
   jobPostId Int
   skillId   Int
-  // Establish the foreign key relationships
   jobPost   JobPost @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
   skill     Skills  @relation(fields: [skillId], references: [id], onDelete: Cascade)
-
-  // Composite index for ensuring unique jobPost-skill pairs
   @@unique([jobPostId, skillId])
+}
+
+model JobSeekerReqSkills {
+  id        Int     @id @default(autoincrement())
+  jobSeekerId Int
+  skillId   Int
+  jobSeeker JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  skill     Skills    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  @@unique([jobSeekerId, skillId])
 }
