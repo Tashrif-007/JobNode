@@ -23,7 +23,7 @@ const ApplyPage = () => {
     const formData = new FormData();
     formData.append("cv", cv);
     formData.append("userId", user.userId); // Use user ID from context
-    
+    formData.append("status", "Pending");
     try {
       const response = await fetch(`http://localhost:3500/apply/applyToPost/${post.id}`, {
         method: "POST",
