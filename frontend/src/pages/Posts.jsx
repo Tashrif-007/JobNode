@@ -23,6 +23,12 @@ const Posts = () => {
     }
   };
 
+  const handleApply = (post) => {
+    navigate(`/posts/apply/${post.id}`, {
+      state: { post }, // Passing the entire post details to ApplyPage via state
+    });
+  };
+
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>
@@ -46,7 +52,7 @@ const Posts = () => {
             experience={post.experience}
             company={post.name}
             skills={post.requiredSkills.map((reqSkill) => reqSkill.skill.name)} // Mapping skills
-            onLearnMore={() => alert(`More details about ${post.position}`)}
+            onApply={() => handleApply(post)} // Pass post object to ApplyPage
           />
         ))}
       </Box>
