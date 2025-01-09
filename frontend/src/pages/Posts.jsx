@@ -4,10 +4,12 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import PostCard from "../components/PostCard";
+import {useAuth} from '../context/AuthContext';
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
+  const {user} = useAuth();
 
   useEffect(() => {
     fetchPosts();
@@ -34,14 +36,14 @@ const Posts = () => {
       <Typography variant="h4" gutterBottom>
         Job Posts
       </Typography>
-      <Button
+      {user && user.userType==='Company' && (<Button
         variant="contained"
         color="primary"
         onClick={() => navigate("/create-post")}
         sx={{ marginBottom: 3 }}
       >
         Create New Post
-      </Button>
+      </Button>)}
       <Box sx={{ display: "grid", gap: 3, gridTemplateColumns: "repeat(auto-fill, minmax(275px, 1fr))" }}>
         {posts.map((post) => (
           <PostCard

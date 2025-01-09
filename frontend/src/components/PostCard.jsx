@@ -5,8 +5,11 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip"; // For displaying skills
+import { useAuth } from "../context/AuthContext";
 
 const PostCard = ({ position, location, salary, experience, company, skills, onApply }) => {
+  const {user} = useAuth();
+
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
@@ -42,9 +45,9 @@ const PostCard = ({ position, location, salary, experience, company, skills, onA
         </CardContent>
         <CardActions>
           {/* Apply button */}
-          <Button size="small" onClick={onApply}>
+          {user && user.userType==='JobSeeker' && (<Button size="small" onClick={onApply}>
             Apply
-          </Button>
+          </Button>)}
         </CardActions>
       </Card>
     </Box>
