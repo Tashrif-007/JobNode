@@ -1,9 +1,16 @@
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
 export const createPost = async (req, res) => {
   try {
+    const decoded = jwt.verify(req.headers.authorization.split(' '[1], process.env.JWT_SECRET));
+
+    if(decoded.userType!=='Company') {
+      return res.status(403).json({error: "Permission denied"});
+    }
+
     const { name, position, salary, experience, location, skills } = req.body;
 
     // Validate input

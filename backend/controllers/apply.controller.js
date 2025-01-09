@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -8,10 +9,16 @@ export const applyToPost = async (req, res) => {
   const cvPath = req.file?.path; // CV file path from Multer
   const {status} = req.body;
   try {
+
+    const decoded = jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET);
+
+    if(decoded.userType!=='JobSeeker') {
+      return res.status(403).json({error: "Permission denied"});
+    }
     if (!cvPath) {
       return res.status(400).json({ error: "CV file is required" });
     }
-    console.log(userId);
+    //console.log(userId);
     // Save application to the database
     const application = await prisma.apply.create({
       data: {
