@@ -42,10 +42,19 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
+      const token = localStorage.getItem('token');
+      if(!token) {
+        alert("You need to be logged in to create a post!");
+        return;
+      }
+      
       const response = await fetch("http://localhost:3500/post/createPost", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          Authorization: `Brearer ${token}`
+         },
         body: JSON.stringify(formData),
       });
 
