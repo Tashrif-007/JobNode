@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // Adjust the path if needed
 import { toast } from "react-toastify";
@@ -24,11 +24,24 @@ const ApplyPage = () => {
     formData.append("cv", cv);
     formData.append("userId", user.userId); // Use user ID from context
     formData.append("status", "Pending");
+
     try {
-      const response = await fetch(`http://localhost:3500/apply/applyToPost/${post.id}`, {
-        method: "POST",
-        body: formData,
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("You must be logged in to apply.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:3500/apply/applyToPost/${post.id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Authorization header with Bearer token
+          },
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

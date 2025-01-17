@@ -5,8 +5,9 @@ const prisma = new PrismaClient();
 
 export const createPost = async (req, res) => {
   try {
-    const decoded = jwt.verify(req.headers.authorization.split(' '[1], process.env.JWT_SECRET));
-
+    const token = req.headers.authorization;
+    const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
+    console.log(decoded.userType);
     if(decoded.userType!=='Company') {
       return res.status(403).json({error: "Permission denied"});
     }
