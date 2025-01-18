@@ -18,6 +18,7 @@ model User {
   jobSeeker JobSeeker?
   company   Company?
   applications Apply[]
+  jobPosts    JobPost[]
 }
 
 model JobSeeker {
@@ -55,6 +56,8 @@ model JobPost {
   experience  Int
   location    String
   createdAt   DateTime  @default(now())
+  userId   Int       // Reference to the company that created the post
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Add relation to company
   requiredSkills JobPostReqSkills[]
   applications   Apply[]
 }

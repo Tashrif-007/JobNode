@@ -7,10 +7,14 @@ export const createPost = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
-    console.log(decoded.userType);
-    if(decoded.userType!=='Company') {
-      return res.status(403).json({error: "Permission denied"});
+    
+    // Ensure the user is a Company
+    if (decoded.userType !== 'Company') {
+      return res.status(403).json({ error: "Permission denied" });
     }
+
+    // Get the userId (Company) from the decoded token
+    const userId = decoded.userId;
 
     const { name, position, salary, experience, location, skills } = req.body;
 
@@ -40,7 +44,7 @@ export const createPost = async (req, res) => {
       })
     );
 
-    // Create the job post with required skills
+    // Create the job post and associate it with the userId (company)
     const jobPost = await prisma.jobPost.create({
       data: {
         name,
@@ -48,6 +52,7 @@ export const createPost = async (req, res) => {
         salary: parseFloat(salary),
         experience: parseInt(experience),
         location,
+        userId, // Associate the job post with the user (company) by userId
         requiredSkills: {
           create: skillRecords.map((skill) => ({
             skillId: skill.id,
@@ -72,7 +77,6 @@ export const createPost = async (req, res) => {
   }
 };
 
-
 export const getAllPost = async (req, res) => {
   try {
     const jobPosts = await prisma.jobPost.findMany({
@@ -82,9 +86,9 @@ export const getAllPost = async (req, res) => {
             skill: true,
           },
         },
+        user: true, // Include the user (Company) details in the response
       },
     });
-    
 
     res.status(200).json(jobPosts);
   } catch (error) {
@@ -94,27 +98,25 @@ export const getAllPost = async (req, res) => {
 };
 
 export const getPostById = async (req, res) => {
-  const { id } = req.params; // Retrieve the ID from the URL params
+  const { id } = req.params;
 
   try {
-    // Fetch the job post by ID, including the required skills
     const jobPost = await prisma.jobPost.findUnique({
-      where: { id: parseInt(id) }, // Find the job post by its ID (ensure it's an integer)
+      where: { id: parseInt(id) },
       include: {
         requiredSkills: {
           include: {
-            skill: true, // Include the skill details in the response
+            skill: true,
           },
         },
+        user: true, // Include the user (Company) details in the response
       },
     });
 
-    // If no job post is found with the provided ID, send a 404 error
     if (!jobPost) {
       return res.status(404).json({ error: 'Job post not found' });
     }
 
-    // Return the job post with the associated skills
     res.status(200).json(jobPost);
   } catch (error) {
     console.error(error.message);

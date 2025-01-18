@@ -38,7 +38,6 @@ export const applyToPost = async (req, res) => {
 
 export const getApplicationsById = async (req, res) => {
   const { userId } = req.params; // Extract userId from request parameters
-  console.log(userId);
   try {
     // Fetch all applications for the given userId
     const applications = await prisma.apply.findMany({
@@ -62,3 +61,34 @@ export const getApplicationsById = async (req, res) => {
   }
 };
 
+export const getApplicationsByCompany = async (req, res) => {
+  const { userId } = req.params;  // Retrieve companyId from URL params
+  console.log(userId);
+  try {
+    // Fetch job posts for the given companyId (using userId instead of companyId)
+    const jobPosts = await prisma.jobPost.findMany({
+      where: {
+        userId: parseInt(userId),  // Use userId to match the company (companyId is now userId)
+      },
+      include: {
+        applications: true,  // Include the applications associated with these job posts
+      },
+    });
+
+    // If no job posts found, send 404
+    if (jobPosts.length === 0) {
+      return res.status(404).json({ error: 'No job posts found for this company' });
+    }
+
+    // Collect all applications related to the job posts of the company
+    const applications = jobPosts.reduce((acc, jobPost) => {
+      return [...acc, ...jobPost.applications];
+    }, []);
+
+    // Return the applications for the company
+    res.status(200).json(applications);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

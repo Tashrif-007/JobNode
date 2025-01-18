@@ -6,17 +6,20 @@ import { toast } from 'react-toastify'; // Assuming you're using react-toastify
 import ApplicationCard from '../components/ApplicationCard'; // Import the reusable ApplicationCard
 
 const Applications = () => {
-  const { user } = useAuth(); // Get user data from AuthContext
+  const { user, isLoading: userLoading } = useAuth(); // Get user data and loading state from AuthContext
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch the applications for the logged-in user
+  // Fetch the applications for the logged-in user when the user is loaded
   useEffect(() => {
-    fetchApplications(user.userId);
-  }, [user, navigate]);
+    if (user && user.userId) {
+      fetchApplications(user.userId);
+    }
+  }, [user]); // Dependency array should only depend on 'user'
 
   const fetchApplications = async (userId) => {
+    setLoading(true); // Set loading to true when fetching data
     try {
       const response = await fetch(`http://localhost:3500/apply/getApplicationsById/${userId}`);
       const data = await response.json();
@@ -34,7 +37,7 @@ const Applications = () => {
     }
   };
 
-  if (loading) {
+  if (userLoading || loading) {  // Wait for both user data and applications to be fetched
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
         <CircularProgress />
@@ -51,7 +54,7 @@ const Applications = () => {
         <Typography>No applications found.</Typography>
       ) : (
         applications.map((application) => (
-          <ApplicationCard key={application.id} application={application} />
+          <ApplicationCard key={application.applicationId} application={application} />
         ))
       )}
     </Box>
