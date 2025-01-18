@@ -7,7 +7,6 @@ export const createPost = async (req, res) => {
   try {
     const token = req.headers.authorization;
     const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
-    console.log(decoded.userType);
     
     // Ensure the user is a Company
     if (decoded.userType !== 'Company') {
@@ -15,7 +14,7 @@ export const createPost = async (req, res) => {
     }
 
     // Get the userId (Company) from the decoded token
-    const companyId = decoded.userId;
+    const userId = decoded.userId;
 
     const { name, position, salary, experience, location, skills } = req.body;
 
@@ -45,7 +44,7 @@ export const createPost = async (req, res) => {
       })
     );
 
-    // Create the job post and associate it with the company using companyId
+    // Create the job post and associate it with the userId (company)
     const jobPost = await prisma.jobPost.create({
       data: {
         name,
@@ -53,7 +52,7 @@ export const createPost = async (req, res) => {
         salary: parseFloat(salary),
         experience: parseInt(experience),
         location,
-        companyId, // Associate the job post with the company
+        userId, // Associate the job post with the user (company) by userId
         requiredSkills: {
           create: skillRecords.map((skill) => ({
             skillId: skill.id,
@@ -87,7 +86,7 @@ export const getAllPost = async (req, res) => {
             skill: true,
           },
         },
-        company: true, // Include company details in the response
+        user: true, // Include the user (Company) details in the response
       },
     });
 
@@ -110,7 +109,7 @@ export const getPostById = async (req, res) => {
             skill: true,
           },
         },
-        company: true, // Include company details in the response
+        user: true, // Include the user (Company) details in the response
       },
     });
 
