@@ -7,6 +7,7 @@ const AuthContext = createContext();
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // State to store logged-in user
+  const [isLoading, setIsLoading] = useState(true); // State to manage loading
   const navigate = useNavigate();
 
   // Helper function to decode a JWT
@@ -31,6 +32,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token'); // Remove invalid token
       }
     }
+    setIsLoading(false); // Stop loading when user data is loaded
   }, []);
 
   // Function to log in the user
@@ -43,11 +45,12 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    setIsLoading(false); // Make sure to stop the loading after logging out
     navigate('/login'); // Redirect to login page after logout
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

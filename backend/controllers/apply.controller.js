@@ -38,7 +38,6 @@ export const applyToPost = async (req, res) => {
 
 export const getApplicationsById = async (req, res) => {
   const { userId } = req.params; // Extract userId from request parameters
-  console.log(userId);
   try {
     // Fetch all applications for the given userId
     const applications = await prisma.apply.findMany({
@@ -63,13 +62,13 @@ export const getApplicationsById = async (req, res) => {
 };
 
 export const getApplicationsByCompany = async (req, res) => {
-  const { companyId } = req.params;  // Retrieve companyId from URL params
-
+  const { userId } = req.params;  // Retrieve companyId from URL params
+  console.log(userId);
   try {
     // Fetch job posts for the given companyId (using userId instead of companyId)
     const jobPosts = await prisma.jobPost.findMany({
       where: {
-        userId: parseInt(companyId),  // Use userId to match the company (companyId is now userId)
+        userId: parseInt(userId),  // Use userId to match the company (companyId is now userId)
       },
       include: {
         applications: true,  // Include the applications associated with these job posts
