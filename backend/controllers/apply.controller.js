@@ -62,8 +62,7 @@ export const getApplicationsById = async (req, res) => {
 };
 
 export const getApplicationsByCompany = async (req, res) => {
-  const { userId } = req.params;  // Retrieve companyId from URL params
-  console.log(userId);
+  const { userId } = req.params;  // Retrieve companyId (userId) from URL params
   try {
     // Fetch job posts for the given companyId (using userId instead of companyId)
     const jobPosts = await prisma.jobPost.findMany({
@@ -71,7 +70,11 @@ export const getApplicationsByCompany = async (req, res) => {
         userId: parseInt(userId),  // Use userId to match the company (companyId is now userId)
       },
       include: {
-        applications: true,  // Include the applications associated with these job posts
+        applications: {
+          include: {
+            user: true, // Include the user (job seeker) who applied
+          },
+        },
       },
     });
 
@@ -82,10 +85,27 @@ export const getApplicationsByCompany = async (req, res) => {
 
     // Collect all applications related to the job posts of the company
     const applications = jobPosts.reduce((acc, jobPost) => {
-      return [...acc, ...jobPost.applications];
+      return [
+        ...acc,
+        ...jobPost.applications.map((application) => ({
+          applicationId: application.applicationId,
+          userId: application.userId,
+          status: application.status,
+          cvPath: application.cvPath,
+          dateCreated: application.dateCreated,
+          jobPost: {
+            jobPostId: jobPost.id,
+            jobPostName: jobPost.name,
+            position: jobPost.position,
+            salary: jobPost.salary,
+            experience: jobPost.experience,
+            location: jobPost.location,
+          },
+        })),
+      ];
     }, []);
 
-    // Return the applications for the company
+    // Return the applications with job post details for the company
     res.status(200).json(applications);
   } catch (error) {
     console.error(error);

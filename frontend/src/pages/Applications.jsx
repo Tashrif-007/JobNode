@@ -8,24 +8,34 @@ import ApplicationCard from '../components/ApplicationCard'; // Import the reusa
 const Applications = () => {
   const { user, isLoading: userLoading } = useAuth(); // Get user data and loading state from AuthContext
   const navigate = useNavigate();
-  const [applications, setApplications] = useState([]);
+  const [applications, setApplications] = useState([]); // Default to an empty array
   const [loading, setLoading] = useState(true);
 
   // Fetch the applications for the logged-in user when the user is loaded
   useEffect(() => {
     if (user && user.userId) {
-      fetchApplications(user.userId);
+      fetchApplications(user.userId, user.userType); // Pass userType to fetchApplications
     }
   }, [user]); // Dependency array should only depend on 'user'
 
-  const fetchApplications = async (userId) => {
+  const fetchApplications = async (userId, userType) => {
     setLoading(true); // Set loading to true when fetching data
+    let url = '';
+    if (userType === 'JobSeeker') {
+      url = `http://localhost:3500/apply/getApplicationsById/${userId}`;
+    } else if (userType === 'Company') {
+      url = `http://localhost:3500/apply/getApplicationsByCompany/${userId}`;
+    }
     try {
-      const response = await fetch(`http://localhost:3500/apply/getApplicationsById/${userId}`);
+      const response = await fetch(url);
       const data = await response.json();
-
+      console.log(data);
       if (response.ok) {
-        setApplications(data.applications);
+        if(user.userType === 'JobSeeker') {
+          setApplications(data.applications || []); // Ensure applications is always an array
+        } else if(user.userType==='Company') {
+          setApplications(data || []); // Ensure applications is always an array
+        }
       } else {
         toast.error(data.message || 'Failed to fetch applications');
       }
