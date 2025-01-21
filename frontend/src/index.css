@@ -533,10 +533,10 @@ video {
  .duration-200 {
   transition-duration: 0.2s;
 }
- *{
+ /* *{
   font-family: Open Sans !important;
   font-size: 16px !important;
-}
+} */
  :is(.bg-primary-100) {
   color: rgba(0, 0, 0, 0.9) !important;
 }
