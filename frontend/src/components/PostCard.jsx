@@ -1,56 +1,30 @@
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip"; // For displaying skills
-import { useAuth } from "../context/AuthContext";
 
-const PostCard = ({ position, location, salary, experience, company, skills, onApply }) => {
-  const {user} = useAuth();
-
+const PostCard = ({ title, location, description, salaryRange, experience, skills, onApply }) => {
   return (
-    <Box sx={{ minWidth: 275 }}>
-      <Card variant="outlined">
-        <CardContent>
-          <Typography gutterBottom sx={{ color: "text.secondary", fontSize: 14 }}>
-            Job Position
-          </Typography>
-          <Typography variant="h5" component="div">
-            {position}
-          </Typography>
-          <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
-            {location}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Salary:</strong> ${salary} <br />
-            <strong>Experience:</strong> {experience} years <br />
-            <strong>Company:</strong> {company}
-          </Typography>
-
-          {/* Display Skills as Chips */}
-          <Box sx={{ marginTop: 2 }}>
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>Required Skills:</Typography>
-            <Box sx={{ marginTop: 1 }}>
-              {skills.length > 0 ? (
-                skills.map((skill, index) => (
-                  <Chip key={index} label={skill} sx={{ marginRight: 1, marginBottom: 1 }} />
-                ))
-              ) : (
-                <Typography variant="body2" color="text.secondary">No skills listed</Typography>
-              )}
-            </Box>
-          </Box>
-        </CardContent>
-        <CardActions>
-          {/* Apply button */}
-          {user && user.userType==='JobSeeker' && (<Button size="small" onClick={onApply}>
-            Apply
-          </Button>)}
-        </CardActions>
-      </Card>
-    </Box>
+    <div className="border p-6 rounded-md shadow-lg flex flex-col justify-between transition-transform duration-200 hover:scale-105">
+      <div>
+        <h3 className="text-xl font-title text-primary-950 mb-2">{title}</h3>
+        <p className="text-sm text-neutral-500 mb-4">{location}</p>
+        <p className="text-neutral-950 leading-relaxed">{description}</p>
+        <div className="mt-6 bg-primary-100 text-primary-950 font-medium px-4 py-4 rounded-md">
+          <p>
+            <strong>Salary range:</strong> {salaryRange}
+          </p>
+          <p>
+            <strong>Experience:</strong> {experience}
+          </p>
+          <p>
+            <strong>Required skills:</strong> {skills}
+          </p>
+        </div>
+      </div>
+      <button
+        className="bg-primary text-white rounded-full px-6 py-3 mt-6 text-lg shadow-md transition-all hover:bg-primary-600 hover:scale-105"
+        onClick={onApply}
+      >
+        Apply Now
+      </button>
+    </div>
   );
 };
 
