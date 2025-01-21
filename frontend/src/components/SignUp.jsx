@@ -1,13 +1,12 @@
 import TextField from '@mui/material/TextField';
-import { styled } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -18,6 +17,7 @@ const SignUp = () => {
     userType: 'JobSeeker', // Default user type
   });
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +29,8 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
     try {
       const response = await fetch("http://localhost:3500/auth/register", {
@@ -54,77 +56,97 @@ const SignUp = () => {
       setError(null);
       navigate("/login");
     } catch (error) {
-      console.error(error.message);
       setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const ColorButton = styled(Button)(() => ({
     color: '#FFFFFF',
-    backgroundColor: '#1f68de',
+    backgroundColor: '#6C63FF',
     '&:hover': {
-      backgroundColor: '#1955b5',
+      backgroundColor: '#514ACD',
     },
+    borderRadius: '8px',
   }));
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <form
-        className="flex flex-col gap-4 glassStyle w-[20em] border-4 border-blue-500 rounded p-4"
-        onSubmit={handleSubmit}
-      >
-        <h1 className="text-center text-blue-700 text-[32px]">SignUp</h1>
-        <TextField
-          id="outlined-basic"
-          label="Email"
-          variant="outlined"
-          onChange={handleChange}
-          type="email"
-          name="email"
-          value={formData.email}
-        />
-        <TextField
-          id="outlined-basic"
-          label="Username"
-          variant="outlined"
-          onChange={handleChange}
-          type="text"
-          name="name"
-          value={formData.name}
-        />
-        <TextField
-          id="outlined-basic"
-          label="Password"
-          variant="outlined"
-          onChange={handleChange}
-          type="password"
-          name="password"
-          value={formData.password}
-        />
-        <FormControl fullWidth>
-          <InputLabel id="user-type-label">User Type</InputLabel>
-          <Select
-            labelId="user-type-label"
-            id="user-type"
-            name="userType"
-            value={formData.userType}
+    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
+      <div className='flex bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
+        {/* Left Column */}
+        <form
+          className='flex flex-col gap-4 w-1/2 p-8'
+          onSubmit={handleSubmit}
+        >
+          <h1 className='text-2xl font-bold text-center text-gray-800 mb-4'>SignUp</h1>
+          <TextField
+            id='signup-email'
+            label='Email'
+            variant='outlined'
             onChange={handleChange}
+            type='email'
+            name='email'
+            value={formData.email}
+          />
+          <TextField
+            id='signup-username'
+            label='Username'
+            variant='outlined'
+            onChange={handleChange}
+            type='text'
+            name='name'
+            value={formData.name}
+          />
+          <TextField
+            id='signup-password'
+            label='Password'
+            variant='outlined'
+            onChange={handleChange}
+            type='password'
+            name='password'
+            value={formData.password}
+          />
+          <FormControl fullWidth>
+            <InputLabel id="user-type-label">User Type</InputLabel>
+            <Select
+              labelId="user-type-label"
+              id="user-type"
+              name="userType"
+              value={formData.userType}
+              onChange={handleChange}
+              label="User Type" // Add this to fix overlapping
+            >
+              <MenuItem value="JobSeeker">Job Seeker</MenuItem>
+              <MenuItem value="Company">Company</MenuItem>
+            </Select>
+          </FormControl>
+
+          {error && <p className='text-red-500 text-center'>{error}</p>}
+          <ColorButton
+            variant='contained'
+            size='large'
+            type='submit'
+            disabled={isLoading}
           >
-            <MenuItem value="JobSeeker">Job Seeker</MenuItem>
-            <MenuItem value="Company">Company</MenuItem>
-          </Select>
-        </FormControl>
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        <ColorButton variant="contained" size="large" type="submit">
-          SignUp
-        </ColorButton>
-        <div className="flex justify-between">
-          <p>Already have an account?</p>
-          <Link to="/login" className="text-blue-700">
-            Login
-          </Link>
+            {isLoading ? 'Signing up...' : 'SignUp'}
+          </ColorButton>
+          <div className='flex items-center gap-2 text-sm mt-4'>
+            <div className='w-full h-[1px] bg-gray-300'></div>
+          </div>
+          <p className='text-sm text-center mt-4'>
+            Already have an account?{' '}
+             <Link to='/login' className='text-blue-500 hover:underline'>
+              Login
+            </Link> 
+          </p>
+        </form>
+
+        {/* Right Column */}
+        <div className='w-1/2 bg-gray-200 flex items-center justify-center'>
+          <img src='/path-to-signup-image.png' alt='Illustration' className='w-3/4 h-auto' />
         </div>
-      </form>
+      </div>
     </div>
   );
 };
