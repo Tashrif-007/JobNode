@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
-import {useAuth} from '../context/AuthContext';
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchPosts();
@@ -32,33 +29,40 @@ const Posts = () => {
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Job Posts
-      </Typography>
-      {user && user.userType==='Company' && (<Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate("/create-post")}
-        sx={{ marginBottom: 3 }}
-      >
-        Create New Post
-      </Button>)}
-      <Box sx={{ display: "grid", gap: 3, gridTemplateColumns: "repeat(auto-fill, minmax(275px, 1fr))" }}>
-        {posts.map((post) => (
-          <PostCard
-            key={post.id}
-            position={post.position}
-            location={post.location}
-            salary={post.salary}
-            experience={post.experience}
-            company={post.name}
-            skills={post.requiredSkills.map((reqSkill) => reqSkill.skill.name)} // Mapping skills
-            onApply={() => handleApply(post)} // Pass post object to ApplyPage
-          />
-        ))}
-      </Box>
-    </Box>
+    <div className="min-w-full min-h-screen rounded-lg bg-white shadow-lg p-8">
+      <header className="flex justify-between items-center">
+        <h1 className="text-4xl font-title text-primary-950">Job Posts</h1>
+        {user && user.userType === "Company" && (
+          <button
+            className="bg-primary text-white rounded-full px-6 py-2 shadow-md transition-all hover:bg-primary-600 hover:shadow-lg"
+            onClick={() => navigate("/create-post")}
+          >
+            Create New Post
+          </button>
+        )}
+      </header>
+      <section className="mt-8">
+        <h2 className="text-2xl font-semibold">Latest Job Openings</h2>
+        <div className="grid grid-cols-3 gap-8 mt-4">
+          {posts.map((post) => (
+            <PostCard
+              key={post.id}
+              title={post.position}
+              location={post.location}
+              description={post.description || "No description available."}
+              salaryRange={`$${post.salary}`}
+              experience={`${post.experience} years`}
+              skills={
+                post.requiredSkills.length > 0
+                  ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
+                  : "No skills listed"
+              }
+              onApply={() => handleApply(post)} // Pass post object to ApplyPage
+            />
+          ))}
+        </div>
+      </section>
+    </div>
   );
 };
 
