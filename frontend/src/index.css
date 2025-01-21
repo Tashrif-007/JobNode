@@ -414,6 +414,14 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(233 229 255 / var(--tw-bg-opacity));
 }
+.bg-customm{
+  --tw-bg-opacity: 1;
+  background-color: rgb(97 27 248 / var(--tw-bg-opacity));
+}
+.text-customm{
+  --tw-bg-opacity: 1;
+  color: rgb(97 27 248 / var(--tw-bg-opacity));
+}
  .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
