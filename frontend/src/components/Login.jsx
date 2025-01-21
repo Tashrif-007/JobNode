@@ -1,16 +1,11 @@
-
-
-
-
-
 // Login Page
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 
-const Login = () => {
+const App = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -56,54 +51,74 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+
   const ColorButton = styled(Button)(() => ({
     color: '#FFFFFF',
-    backgroundColor: '#1f68de',
+    backgroundColor: '#6C63FF',
     '&:hover': {
-      backgroundColor: '#1955b5',
+      backgroundColor: '#514ACD',
     },
+    borderRadius: '8px',
   }));
 
   return (
-    <div className='flex justify-center items-center min-h-screen'>
-      <form
-        className='flex flex-col gap-4 glassStyle w-[20em] border-4 border-blue-500 rounded p-4'
-        onSubmit={handleSubmit}
-      >
-        <h1 className='text-center text-blue-700 text-[32px]'>Login</h1>
-        <TextField
-          id='login-email'
-          label='Email'
-          variant='outlined'
-          onChange={handleChange}
-          type='email'
-          name='email'
-          value={formData.email}
-        />
-        <TextField
-          id='login-password'
-          label='Password'
-          variant='outlined'
-          onChange={handleChange}
-          type='password'
-          name='password'
-          value={formData.password}
-        />
-        {error && <p className='text-red-500 text-center'>{error}</p>}
-        <ColorButton variant='contained' size='large' type='submit' disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
-        </ColorButton>
-        <div className='flex justify-between'>
-          <p>Don&apos;t have an account?</p>
-          <Link to='/signup' className='text-blue-700'>Signup</Link>
+    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
+      <div className='flex bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
+        {/* Left Column */}
+        <form
+          className='flex flex-col gap-4 w-1/2 p-8'
+          onSubmit={handleSubmit}
+        >
+          <h1 className='text-2xl font-bold text-center text-gray-800 mb-4'>Login</h1>
+          <TextField
+            id='login-email'
+            label='Email'
+            variant='outlined'
+            onChange={handleChange}
+            type='email'
+            name='email'
+            value={formData.email}
+          />
+          <TextField
+            id='login-password'
+            label='Password'
+            variant='outlined'
+            onChange={handleChange}
+            type='password'
+            name='password'
+            value={formData.password}
+          />
+          <Link to='/forgot-password' className='text-sm text-blue-500 hover:underline self-center'>
+            Forgot Password?
+          </Link>
+          {error && <p className='text-red-500 text-center'>{error}</p>}
+          <ColorButton
+            variant='contained'
+            size='large'
+            type='submit'
+            disabled={isLoading}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </ColorButton>
+          <div className='flex items-center gap-2 text-sm mt-4'>
+            <div className='w-full h-[1px] bg-gray-300'></div>
+          </div>
+          
+          <p className='text-sm text-center mt-4'>
+            Don’t have an account?{' '}
+            <Link to='/signup' className='text-blue-500 hover:underline'>
+              Register
+            </Link>
+          </p>
+        </form>
+
+        {/* Right Column */}
+        <div className='w-1/2 bg-gray-200 flex items-center justify-center'>
+          <img src='/path-to-image.png' alt='Illustration' className='w-3/4 h-auto' />
         </div>
-        <div className='flex justify-between'>
-          <p>Forgot Password?</p>
-          <Link to='/forgot-password' className='text-blue-700'>Reset Password</Link>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };
 
-export default Login;
+export default App;
