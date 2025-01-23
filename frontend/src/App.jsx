@@ -9,6 +9,7 @@ import ResetPassword from './pages/ResetPassword';
 import "react-toastify/dist/ReactToastify.css"; // Import the default styles for toast notifications
 import ApplyPage from './pages/Apply';
 import Applications from './pages/Applications';
+import Profile from './pages/Profile';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
           <Route path='/create-post' element={<CreatePost />}/>
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password' element={<ResetPassword />}/>
+          <Route path='/profile' element={<Profile />}/>
         </Routes>
       </div>
     // </Router>
