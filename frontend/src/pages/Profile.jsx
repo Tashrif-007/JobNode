@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Save, Edit, Plus, Trash2, Camera, DollarSign, Briefcase } from 'lucide-react';
 
-const App = () => {
+const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
     username: 'Sheikh Nahian',
@@ -115,7 +115,6 @@ const App = () => {
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Profile Picture and Basic Info Row */}
           <div className="flex flex-col justify-center items-center space-x-6">
             <div className="relative">
               <img 
@@ -164,9 +163,7 @@ const App = () => {
             )}
           </div>
 
-          {/* Rest of the previous content remains the same */}
           <div className="grid md:grid-cols-1 gap-6">
-            {/* Salary Expectation */}
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="flex items-center mb-4">
                 <DollarSign className="mr-3 text-green-500" size={24} />
@@ -186,8 +183,6 @@ const App = () => {
                 </p>
               )}
             </div>
-
-            {/* Experience */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="flex items-center mb-4">
                 <Briefcase className="mr-3 text-blue-500" size={24} />
@@ -252,8 +247,6 @@ const App = () => {
               )}
             </div>
           </div>
-
-          {/* Skills */}
           <div className="bg-green-50 p-4 rounded-lg">
             <div className="flex items-center mb-4">
               <Plus className="mr-3 text-green-500" size={24} />
@@ -303,4 +296,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Profile;
