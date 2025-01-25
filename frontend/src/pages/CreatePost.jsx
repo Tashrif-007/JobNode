@@ -29,7 +29,7 @@ const CreatePost = () => {
         ...prevData,
         skills: [...prevData.skills, skillInput.trim()],
       }));
-      setSkillInput(""); // Clear the input after adding a skill
+      setSkillInput(""); 
     }
   };
 

@@ -1,4 +1,3 @@
-// Drawer.jsx
 import { Drawer, List, ListItem, ListItemText } from '@mui/material';
 
 const AppDrawer = ({ drawerOpen, toggleDrawer, logout }) => {

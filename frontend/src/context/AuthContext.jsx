@@ -1,19 +1,16 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Create the context
 const AuthContext = createContext();
 
-// AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // State to store logged-in user
-  const [isLoading, setIsLoading] = useState(true); // State to manage loading
+  const [user, setUser] = useState(null); 
+  const [isLoading, setIsLoading] = useState(true); 
   const navigate = useNavigate();
 
-  // Helper function to decode a JWT
   const decodeToken = (token) => {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // Decode the token payload
+      const payload = JSON.parse(atob(token.split('.')[1])); 
       return payload;
     } catch (error) {
       console.error('Invalid token:', error);
@@ -21,32 +18,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Function to load user data from localStorage and decode the token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      const decodedUser = decodeToken(token); // Decode token payload to extract user info
+      const decodedUser = decodeToken(token); 
       if (decodedUser) {
-        setUser(decodedUser); // Set user state if decoding succeeds
+        setUser(decodedUser); 
       } else {
-        localStorage.removeItem('token'); // Remove invalid token
+        localStorage.removeItem('token');
       }
     }
-    setIsLoading(false); // Stop loading when user data is loaded
+    setIsLoading(false); 
   }, []);
 
-  // Function to log in the user
   const login = (userData, token) => {
     localStorage.setItem('token', token);
-    setUser(userData); // Set user state based on provided data
+    setUser(userData); 
   };
 
-  // Function to log out the user
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
-    setIsLoading(false); // Make sure to stop the loading after logging out
-    navigate('/login'); // Redirect to login page after logout
+    setIsLoading(false); 
+    navigate('/login'); 
   };
 
   return (
@@ -56,5 +50,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);

@@ -24,7 +24,7 @@ const Posts = () => {
 
   const handleApply = (post) => {
     navigate(`/posts/apply/${post.id}`, {
-      state: { post }, // Passing the entire post details to ApplyPage via state
+      state: { post }, 
     });
   };
 
@@ -57,7 +57,7 @@ const Posts = () => {
                   ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
                   : "No skills listed"
               }
-              onApply={() => handleApply(post)} // Pass post object to ApplyPage
+              onApply={() => handleApply(post)} 
             />
           ))}
         </div>

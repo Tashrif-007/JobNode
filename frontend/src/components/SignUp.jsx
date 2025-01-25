@@ -14,7 +14,7 @@ const SignUp = () => {
     email: '',
     name: '',
     password: '',
-    userType: 'JobSeeker', // Default user type
+    userType: 'JobSeeker',
   });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +74,6 @@ const SignUp = () => {
   return (
     <div className='flex justify-center items-center min-h-screen bg-gray-100'>
       <div className='flex bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
-        {/* Left Column */}
         <form
           className='flex flex-col gap-4 w-1/2 p-8'
           onSubmit={handleSubmit}
@@ -115,7 +114,7 @@ const SignUp = () => {
               name="userType"
               value={formData.userType}
               onChange={handleChange}
-              label="User Type" // Add this to fix overlapping
+              label="User Type"
             >
               <MenuItem value="JobSeeker">Job Seeker</MenuItem>
               <MenuItem value="Company">Company</MenuItem>
@@ -142,7 +141,6 @@ const SignUp = () => {
           </p>
         </form>
 
-        {/* Right Column */}
         <div className='w-1/2 bg-gray-200 flex items-center justify-center'>
           <img src='/path-to-signup-image.png' alt='Illustration' className='w-3/4 h-auto' />
         </div>

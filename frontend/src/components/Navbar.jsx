@@ -1,4 +1,3 @@
-// Navbar.jsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -42,27 +41,6 @@ const Navbar = ({ toggleDrawer }) => {
                 </Link>
             </li>
           ))}
-          {/* <li>
-            <Link to="/" className="hover:text-blue-500">
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link to="/posts" className="hover:text-blue-500">
-              Posts
-            </Link>
-          </li>
-          <li>
-            <Link to="/applications" className="hover:text-blue-500">
-              Applications
-            </Link>
-          </li>
-          <li>
-            <Link to="/chats" className="hover:text-blue-500">
-              Chats
-            </Link>
-          </li> */}
-
         </ul>
         {user ? (
           <button

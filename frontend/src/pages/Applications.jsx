@@ -1,25 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // Assuming the AuthContext is set up
+import { useAuth } from '../context/AuthContext'; 
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { toast } from 'react-toastify'; // Assuming you're using react-toastify
-import ApplicationCard from '../components/ApplicationCard'; // Import the reusable ApplicationCard
+import { toast } from 'react-toastify'; 
+import ApplicationCard from '../components/ApplicationCard'; 
 
 const Applications = () => {
-  const { user, isLoading: userLoading } = useAuth(); // Get user data and loading state from AuthContext
+  const { user, isLoading: userLoading } = useAuth(); 
   const navigate = useNavigate();
-  const [applications, setApplications] = useState([]); // Default to an empty array
+  const [applications, setApplications] = useState([]); 
   const [loading, setLoading] = useState(true);
 
-  // Fetch the applications for the logged-in user when the user is loaded
   useEffect(() => {
     if (user && user.userId) {
-      fetchApplications(user.userId, user.userType); // Pass userType to fetchApplications
+      fetchApplications(user.userId, user.userType); 
     }
-  }, [user]); // Dependency array should only depend on 'user'
+  }, [user]); 
 
   const fetchApplications = async (userId, userType) => {
-    setLoading(true); // Set loading to true when fetching data
+    setLoading(true); 
     let url = '';
     if (userType === 'JobSeeker') {
       url = `http://localhost:3500/apply/getApplicationsById/${userId}`;
@@ -32,9 +31,9 @@ const Applications = () => {
       console.log(data);
       if (response.ok) {
         if(user.userType === 'JobSeeker') {
-          setApplications(data.applications || []); // Ensure applications is always an array
+          setApplications(data.applications || []); 
         } else if(user.userType==='Company') {
-          setApplications(data || []); // Ensure applications is always an array
+          setApplications(data || []); 
         }
       } else {
         toast.error(data.message || 'Failed to fetch applications');
@@ -47,7 +46,7 @@ const Applications = () => {
     }
   };
 
-  if (userLoading || loading) {  // Wait for both user data and applications to be fetched
+  if (userLoading || loading) {  
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
         <CircularProgress />

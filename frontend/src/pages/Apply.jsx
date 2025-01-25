@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // Adjust the path if needed
+import { useAuth } from "../context/AuthContext"; 
 import { toast } from "react-toastify";
 import { Box, Button, Typography, TextField } from "@mui/material";
 
 const ApplyPage = () => {
-  const { user } = useAuth(); // Get user data from AuthContext
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation(); // Access the location object to get passed state
-  const { post } = location.state || {}; // Get post details from location.state
+  const location = useLocation(); 
+  const { post } = location.state || {}; 
 
   const [cv, setCv] = useState(null);
 
@@ -22,7 +22,7 @@ const ApplyPage = () => {
 
     const formData = new FormData();
     formData.append("cv", cv);
-    formData.append("userId", user.userId); // Use user ID from context
+    formData.append("userId", user.userId); 
     formData.append("status", "Pending");
 
     try {
@@ -37,7 +37,7 @@ const ApplyPage = () => {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`, // Add Authorization header with Bearer token
+            Authorization: `Bearer ${token}`, 
           },
           body: formData,
         }
@@ -46,7 +46,7 @@ const ApplyPage = () => {
       if (response.ok) {
         const data = await response.json();
         toast.success(data.message);
-        navigate("/applications"); // Redirect to applications page
+        navigate("/applications"); 
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to submit application.");

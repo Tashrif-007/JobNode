@@ -1,11 +1,10 @@
-// Login Page
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 
-const App = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -64,7 +63,6 @@ const App = () => {
   return (
     <div className='flex justify-center items-center min-h-screen bg-gray-100'>
       <div className='flex bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
-        {/* Left Column */}
         <form
           className='flex flex-col gap-4 w-1/2 p-8'
           onSubmit={handleSubmit}
@@ -112,7 +110,6 @@ const App = () => {
           </p>
         </form>
 
-        {/* Right Column */}
         <div className='w-1/2 bg-gray-200 flex items-center justify-center'>
           <img src='/path-to-image.png' alt='Illustration' className='w-3/4 h-auto' />
         </div>
@@ -121,4 +118,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Login;
