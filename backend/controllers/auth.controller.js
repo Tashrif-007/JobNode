@@ -17,7 +17,6 @@ export const register = async (req, res) => {
     try {
       const { email, name, password, userType } = req.body;
   
-      // Validate input fields
       if (!email || !name || !password || !userType) {
         return res.status(400).json({ message: 'Please provide all required fields: email, name, password, and userType.' });
       }
@@ -25,8 +24,7 @@ export const register = async (req, res) => {
       if (userType !== 'JobSeeker' && userType !== 'Company') {
         return res.status(400).json({ message: 'Invalid userType. It must be either "JobSeeker" or "Company".' });
       }
-  
-      // Check if user already exists
+
       const existingUser = await prisma.user.findUnique({
         where: { email },
       });
