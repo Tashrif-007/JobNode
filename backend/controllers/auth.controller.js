@@ -13,7 +13,6 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Registration for both JobSeeker and Company
 export const register = async (req, res) => {
     try {
       const { email, name, password, userType } = req.body;
@@ -35,11 +34,9 @@ export const register = async (req, res) => {
       if (existingUser) {
         return res.status(400).json({ error: 'User already exists.' });
       }
-  
-      // Hash the password
+
       const hashedPassword = await bcrypt.hash(password, 10);
-  
-      // Create the user without JobSeeker or Company data
+
       const newUser = await prisma.user.create({
         data: {
           email,

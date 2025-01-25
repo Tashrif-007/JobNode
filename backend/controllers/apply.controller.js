@@ -4,9 +4,9 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 
 export const applyToPost = async (req, res) => {
-  const { userId } = req.body; // User ID from request body
-  const { id: jobPostId } = req.params; // Job post ID from route
-  const cvPath = req.file?.path; // CV file path from Multer
+  const { userId } = req.body; 
+  const { id: jobPostId } = req.params; 
+  const cvPath = req.file?.path; 
   const {status} = req.body;
   try {
 
@@ -18,8 +18,7 @@ export const applyToPost = async (req, res) => {
     if (!cvPath) {
       return res.status(400).json({ error: "CV file is required" });
     }
-    //console.log(userId);
-    // Save application to the database
+
     const application = await prisma.apply.create({
       data: {
         userId: parseInt(userId),
@@ -37,19 +36,17 @@ export const applyToPost = async (req, res) => {
 };
 
 export const getApplicationsById = async (req, res) => {
-  const { userId } = req.params; // Extract userId from request parameters
+  const { userId } = req.params; 
   try {
-    // Fetch all applications for the given userId
     const applications = await prisma.apply.findMany({
       where: {
-        userId: parseInt(userId), // Filter by userId
+        userId: parseInt(userId), 
       },
       include: {
-        jobPost: true, // Optionally include job post details in the response
+        jobPost: true, 
       },
     });
 
-    // Check if no applications are found for the given userId
     if (applications.length === 0) {
       return res.status(404).json({ message: "No applications found for this user" });
     }
@@ -62,28 +59,25 @@ export const getApplicationsById = async (req, res) => {
 };
 
 export const getApplicationsByCompany = async (req, res) => {
-  const { userId } = req.params;  // Retrieve companyId (userId) from URL params
+  const { userId } = req.params; 
   try {
-    // Fetch job posts for the given companyId (using userId instead of companyId)
     const jobPosts = await prisma.jobPost.findMany({
       where: {
-        userId: parseInt(userId),  // Use userId to match the company (companyId is now userId)
+        userId: parseInt(userId),  
       },
       include: {
         applications: {
           include: {
-            user: true, // Include the user (job seeker) who applied
+            user: true, 
           },
         },
       },
     });
 
-    // If no job posts found, send 404
     if (jobPosts.length === 0) {
       return res.status(404).json({ error: 'No job posts found for this company' });
     }
 
-    // Collect all applications related to the job posts of the company
     const applications = jobPosts.reduce((acc, jobPost) => {
       return [
         ...acc,
@@ -105,7 +99,6 @@ export const getApplicationsByCompany = async (req, res) => {
       ];
     }, []);
 
-    // Return the applications with job post details for the company
     res.status(200).json(applications);
   } catch (error) {
     console.error(error);
