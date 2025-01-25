@@ -3,42 +3,48 @@ import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
+const verifyToken = (token) => {
+  if (!token) {
+    throw new Error('Authorization token missing');
+  }
+  return jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
+};
+
+const validateJobPostData = ({ name, position, salary, experience, location, skills }) => {
+  if (!name || !position || !salary || !experience || !location) {
+    throw new Error('All fields are required');
+  }
+  if (!Array.isArray(skills) || skills.length === 0) {
+    throw new Error('At least one skill is required');
+  }
+};
+
+const upsertSkills = async (skills) => {
+  return Promise.all(
+    skills.map(async (skillName) => {
+      const skill = await prisma.skills.upsert({
+        where: { name: skillName },
+        update: {},
+        create: { name: skillName },
+      });
+      return skill;
+    })
+  );
+};
+
 export const createPost = async (req, res) => {
   try {
     const token = req.headers.authorization;
-    const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
-    
-    if (decoded.userType !== 'Company') {
-      return res.status(403).json({ error: "Permission denied" });
-    }
+    const decoded = verifyToken(token);
 
-    const userId = decoded.userId;
+    if (decoded.userType !== 'Company') {
+      return res.status(403).json({ error: 'Permission denied' });
+    }
 
     const { name, position, salary, experience, location, skills } = req.body;
+    validateJobPostData({ name, position, salary, experience, location, skills });
 
-    if (!position || !salary || !experience || !location || !name) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    if (!Array.isArray(skills) || skills.length === 0) {
-      return res.status(400).json({ error: 'At least one skill is required' });
-    }
-
-    const skillRecords = await Promise.all(
-      skills.map(async (skillName) => {
-        try {
-          const skill = await prisma.skills.upsert({
-            where: { name: skillName },
-            update: {}, 
-            create: { name: skillName },
-          });
-          return skill;
-        } catch (err) {
-          console.error(`Error upserting skill: ${skillName}`, err);
-          throw new Error('Error upserting skill');
-        }
-      })
-    );
+    const skillRecords = await upsertSkills(skills);
 
     const jobPost = await prisma.jobPost.create({
       data: {
@@ -47,17 +53,13 @@ export const createPost = async (req, res) => {
         salary: parseFloat(salary),
         experience: parseInt(experience),
         location,
-        userId, 
+        userId: decoded.userId,
         requiredSkills: {
-          create: skillRecords.map((skill) => ({
-            skillId: skill.id,
-          })),
+          create: skillRecords.map((skill) => ({ skillId: skill.id })),
         },
       },
       include: {
-        requiredSkills: {
-          include: { skill: true },
-        },
+        requiredSkills: { include: { skill: true } },
       },
     });
 
@@ -66,9 +68,8 @@ export const createPost = async (req, res) => {
     if (error.code === 'P2002' && error.meta.target.includes('name')) {
       return res.status(409).json({ error: 'Job post with this name already exists' });
     }
-
     console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 };
 
@@ -76,15 +77,10 @@ export const getAllPost = async (req, res) => {
   try {
     const jobPosts = await prisma.jobPost.findMany({
       include: {
-        requiredSkills: {
-          include: {
-            skill: true,
-          },
-        },
-        user: true, 
+        requiredSkills: { include: { skill: true } },
+        user: true,
       },
     });
-
     res.status(200).json(jobPosts);
   } catch (error) {
     console.error(error.message);
@@ -93,18 +89,13 @@ export const getAllPost = async (req, res) => {
 };
 
 export const getPostById = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const jobPost = await prisma.jobPost.findUnique({
       where: { id: parseInt(id) },
       include: {
-        requiredSkills: {
-          include: {
-            skill: true,
-          },
-        },
-        user: true, 
+        requiredSkills: { include: { skill: true } },
+        user: true,
       },
     });
 
