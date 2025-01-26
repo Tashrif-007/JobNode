@@ -62,7 +62,7 @@ const Login = () => {
 
   return (
     <div className='flex justify-center items-center min-h-screen bg-gray-100'>
-      <div className='flex bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
+      <div className='flex items-center bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
         <form
           className='flex flex-col gap-4 w-1/2 p-8'
           onSubmit={handleSubmit}
@@ -111,7 +111,7 @@ const Login = () => {
         </form>
 
         <div className='w-1/2 bg-gray-200 flex items-center justify-center'>
-          <img src='/path-to-image.png' alt='Illustration' className='w-3/4 h-auto' />
+          <img src='/loginImg.jpeg' alt='Illustration' className='w-full h-auto' />
         </div>
       </div>
     </div>
