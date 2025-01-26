@@ -53,7 +53,7 @@ const Login = () => {
 
   const ColorButton = styled(Button)(() => ({
     color: '#FFFFFF',
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#8D538D',
     '&:hover': {
       backgroundColor: '#514ACD',
     },
