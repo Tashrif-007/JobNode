@@ -13,7 +13,8 @@ frontend/.env
 # Python
 recApi/__pycache__/
 recApi/venv/
-recApi/*.env
+recApi/env
+recApi/dataset/
 
 # Logs
 *.log
