@@ -171,3 +171,97 @@ export const getPostById = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+// This function handles filtering the job posts based on the query parameters
+export const searchFilteredPosts = async (req, res) => {
+  try {
+    const { search, salary, experience, location, skills } = req.query;
+
+    // Start building the query for job posts
+    const query = {
+      where: {
+        AND: [],
+      },
+      include: {
+        requiredSkills: { // Ensure requiredSkills are included in the response
+          include: {
+            skill: true, // Include the related skill data
+          },
+        },
+      },
+    };
+
+    // Handle search query for title, description, and location
+    if (search) {
+      const searchTerm = search.toLowerCase();
+      query.where.AND.push({
+        OR: [
+          { name: { contains: searchTerm } },
+          { location: { contains: searchTerm } },
+        ],
+      });
+    }
+
+    // Filter by salary (using salary range format 100-200)
+    if (salary) {
+      const [minSalary, maxSalary] = salary.split("-").map((value) => parseFloat(value));
+      query.where.AND.push({
+        salary: {
+          gte: minSalary,
+          lte: maxSalary,
+        },
+      });
+    }
+
+    // Filter by experience
+    if (experience) {
+      query.where.AND.push({
+        experience: { gte: parseInt(experience) },
+      });
+    }
+
+    // Filter by location
+    if (location) {
+      const locationTerm = location.toLowerCase();
+      query.where.AND.push({
+        location: { contains: locationTerm },
+      });
+    }
+
+    // Filter by skills - Resolving skill names to IDs first
+    if (skills) {
+      const skillNames = skills.split(",").map((name) => name.trim().toLowerCase()); // Handle multiple skill names
+
+      // Fetch skill IDs based on skill names
+      const skillRecords = await prisma.skills.findMany({
+        where: {
+          name: {
+            in: skillNames,
+          },
+        },
+      });
+
+      const skillIds = skillRecords.map((skill) => skill.id); // Get the skill IDs
+
+      if (skillIds.length > 0) {
+        query.where.AND.push({
+          requiredSkills: {
+            some: {
+              skillId: { in: skillIds }, // Use the skill IDs for filtering
+            },
+          },
+        });
+      }
+    }
+    
+    // Fetch posts from the database with requiredSkills included
+    const posts = await prisma.jobPost.findMany(query);
+
+    // Return filtered posts with requiredSkills data
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching filtered posts:", error);
+    return res.status(500).json({ error: "An error occurred while fetching posts." });
+  }
+};
