@@ -73,18 +73,80 @@ export const createPost = async (req, res) => {
   }
 };
 
-export const getAllPost = async (req, res) => {
+// Controller to get all posts (initial load)
+export const getAllPosts = async (req, res) => {
   try {
     const jobPosts = await prisma.jobPost.findMany({
       include: {
-        requiredSkills: { include: { skill: true } },
-        user: true,
+        requiredSkills: {
+          include: {
+            skill: true,
+          },
+        },
+        user: {
+          include: {
+            company: true,
+          }
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
+    
     res.status(200).json(jobPosts);
   } catch (error) {
-    console.error(error.message);
+    console.error('Error in getAllPosts:', error.message);
     res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+// Controller to search posts based on search parameter
+export const searchPosts = async (req, res) => {
+  const { search } = req.query;
+
+  try {
+    const posts = await prisma.jobPost.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: search.toLowerCase(),
+            },
+          },
+          {
+            location: {
+              contains: search.toLowerCase(),
+            },
+          },
+          {
+            requiredSkills: {
+              some: {
+                skill: {
+                  name: {
+                    contains: search.toLowerCase(),
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        requiredSkills: {
+          include: {
+            skill: true,
+          },
+        },
+      },
+    });
+
+    return res.json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 

@@ -1,3 +1,5 @@
+
+
 const PostCard = ({ title, location, description, salaryRange, experience, skills, onApply }) => {
   return (
     <div className="border p-6 rounded-md shadow-lg flex flex-col justify-between transition-transform duration-200 hover:scale-105">

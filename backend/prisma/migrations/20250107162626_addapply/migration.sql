@@ -1,4 +1,4 @@
--- CreateTable
+
 CREATE TABLE `User` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE `User` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
+
 CREATE TABLE `JobSeeker` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE `JobSeeker` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
+
 CREATE TABLE `Company` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
@@ -34,7 +34,11 @@ CREATE TABLE `Company` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
+ALTER TABLE `JobSeeker` ADD CONSTRAINT `JobSeeker_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `Company` ADD CONSTRAINT `Company_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
 CREATE TABLE `Skills` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -43,7 +47,7 @@ CREATE TABLE `Skills` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
+
 CREATE TABLE `JobPost` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -57,7 +61,7 @@ CREATE TABLE `JobPost` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
+
 CREATE TABLE `JobPostReqSkills` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `jobPostId` INTEGER NOT NULL,
@@ -67,7 +71,7 @@ CREATE TABLE `JobPostReqSkills` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
+
 CREATE TABLE `JobSeekerReqSkills` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `jobSeekerId` INTEGER NOT NULL,
@@ -77,7 +81,17 @@ CREATE TABLE `JobSeekerReqSkills` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
+ALTER TABLE `JobPostReqSkills` ADD CONSTRAINT `JobPostReqSkills_jobPostId_fkey` FOREIGN KEY (`jobPostId`) REFERENCES `JobPost`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+ALTER TABLE `JobPostReqSkills` ADD CONSTRAINT `JobPostReqSkills_skillId_fkey` FOREIGN KEY (`skillId`) REFERENCES `Skills`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+ALTER TABLE `JobSeekerReqSkills` ADD CONSTRAINT `JobSeekerReqSkills_jobSeekerId_fkey` FOREIGN KEY (`jobSeekerId`) REFERENCES `JobSeeker`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `JobSeekerReqSkills` ADD CONSTRAINT `JobSeekerReqSkills_skillId_fkey` FOREIGN KEY (`skillId`) REFERENCES `Skills`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
 CREATE TABLE `Apply` (
     `applicationId` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
@@ -89,26 +103,8 @@ CREATE TABLE `Apply` (
     PRIMARY KEY (`applicationId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- AddForeignKey
-ALTER TABLE `JobSeeker` ADD CONSTRAINT `JobSeeker_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Company` ADD CONSTRAINT `Company_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `JobPostReqSkills` ADD CONSTRAINT `JobPostReqSkills_jobPostId_fkey` FOREIGN KEY (`jobPostId`) REFERENCES `JobPost`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `JobPostReqSkills` ADD CONSTRAINT `JobPostReqSkills_skillId_fkey` FOREIGN KEY (`skillId`) REFERENCES `Skills`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `JobSeekerReqSkills` ADD CONSTRAINT `JobSeekerReqSkills_jobSeekerId_fkey` FOREIGN KEY (`jobSeekerId`) REFERENCES `JobSeeker`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `JobSeekerReqSkills` ADD CONSTRAINT `JobSeekerReqSkills_skillId_fkey` FOREIGN KEY (`skillId`) REFERENCES `Skills`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Apply` ADD CONSTRAINT `Apply_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
+
 ALTER TABLE `Apply` ADD CONSTRAINT `Apply_jobPostId_fkey` FOREIGN KEY (`jobPostId`) REFERENCES `JobPost`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
