@@ -15,6 +15,7 @@ recApi/__pycache__/
 recApi/venv/
 recApi/env
 recApi/dataset/
+recApi/app/__pycache__/
 
 # Logs
 *.log
