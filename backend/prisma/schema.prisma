@@ -19,6 +19,12 @@ model User {
   company   Company?
   applications Apply[]
   jobPosts    JobPost[]
+
+  // Chat relationships
+  conversations1 Conversation[] @relation(name: "User1Conversations")
+  conversations2 Conversation[] @relation(name: "User2Conversations")
+  sentMessages   Message[] @relation(name: "SentMessages")
+  receivedMessages Message[] @relation(name: "ReceivedMessages")
 }
 
 model JobSeeker {
@@ -91,4 +97,30 @@ model Apply {
   jobPost       JobPost   @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
 
   @@unique([userId, jobPostId]) // Ensure that a job seeker can apply only once to a specific job
+}
+
+
+model Conversation {
+  id    Int  @id @default(autoincrement())
+  user1 Int
+  user2 Int
+  messages Message[]
+
+  userOne User @relation(name: "User1Conversations", fields: [user1], references: [id], onDelete: Cascade)
+  userTwo User @relation(name: "User2Conversations", fields: [user2], references: [id], onDelete: Cascade)
+
+  @@unique([user1, user2]) // Ensures one conversation per user pair
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  content    String
+  createdAt  DateTime @default(now())
+  conversationId Int
+
+  sender   User @relation(name: "SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation(name: "ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }
