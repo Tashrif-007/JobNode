@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ApplyPage from './pages/Apply';
 import Applications from './pages/Applications';
 import Profile from './pages/Profile';
+import Chat from './pages/Chat';
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
           <Route path='/applications' element={<Applications />}/>
           <Route path='/posts/apply/:id' element={<ApplyPage />}/>
           <Route path='/create-post' element={<CreatePost />}/>
+          <Route path='/chats' element={<Chat />}/>
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password' element={<ResetPassword />}/>
           <Route path='/profile' element={<Profile />}/>

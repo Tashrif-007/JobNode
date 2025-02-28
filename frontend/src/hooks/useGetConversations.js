@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import useAuth from '../context/AuthContext'
+import {useAuth} from '../context/AuthContext'
 const useGetConversations = () => {
   const [loading, setLoading] = useState(false);
   const [conversations, setConversations] = useState([]);
-  const { authUser } = useAuth();
+  const { user } = useAuth();
   useEffect(() => {
     const getConversations = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:3500/conversation/getConversations/${authUser.userId}`);
+        const res = await fetch(`http://localhost:3500/conversation/getConversations/${user.userId}`);
         const data = await res.json();
         
         if (data.error) {
@@ -24,10 +24,10 @@ const useGetConversations = () => {
       }
     };
 
-    if (authUser?.userId) {
+    if (user?.userId) {
       getConversations();
     }
-  }, [authUser?.userId]);
+  }, [user?.userId]);
 
   return { loading, conversations };
 };
