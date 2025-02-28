@@ -4,9 +4,9 @@ import { useAuth } from "./AuthContext";
 
 const SocketContext = createContext({ socket: null, onlineUsers: [] });
 
-export const useSocketContext = () => useContext(SocketContext);
+export const useSocketContext = () => {return useContext(SocketContext)};
 
-export const SocketProvider = ({ children }) => {
+export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const { user } = useAuth();
@@ -34,4 +34,4 @@ export const SocketProvider = ({ children }) => {
   return <SocketContext.Provider value={{ socket, onlineUsers }}>{children}</SocketContext.Provider>;
 };
 
-export default SocketProvider;
+

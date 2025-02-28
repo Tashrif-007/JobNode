@@ -24,7 +24,7 @@ const App = () => {
           <Route path='/applications' element={<Applications />}/>
           <Route path='/posts/apply/:id' element={<ApplyPage />}/>
           <Route path='/create-post' element={<CreatePost />}/>
-          <Route path='/chats' element={<Chat />}/>
+          <Route path='/chats' element={<Chat/>}/>
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password' element={<ResetPassword />}/>
           <Route path='/profile' element={<Profile />}/>

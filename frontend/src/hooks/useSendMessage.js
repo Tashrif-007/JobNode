@@ -5,13 +5,15 @@ import toast from 'react-hot-toast';
 const useSendMessage = () => {
   const [loading, setLoading] = useState(false);
   const { messages, setMessages, selectedConversation } = useConversation();
-
+  const token = localStorage.getItem('token');
   const sendMessage = async (message) => {
     setLoading(true);
     try {
-      const res = await fetch(`/message/send/${selectedConversation.id}`, {
+      const res = await fetch(`http://localhost:3500/message/send/${selectedConversation.id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+         },
         body: JSON.stringify({ message }),
       });
 

@@ -30,7 +30,7 @@ export const getConversations = async (req, res) => {
       select: { id: true, name: true, email: true },
     });
 
-    res.status(200).json({ success: true, users });
+    res.status(200).json({ users });
   } catch (error) {
     console.error("Error fetching conversations:", error);
     res.status(500).json({ success: false, message: "Server error" });

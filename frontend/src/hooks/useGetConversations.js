@@ -11,12 +11,11 @@ const useGetConversations = () => {
       try {
         const res = await fetch(`http://localhost:3500/conversation/getConversations/${user.userId}`);
         const data = await res.json();
-        
         if (data.error) {
           throw new Error(data.error);
         }
         
-        setConversations(data);
+        setConversations(data.users);
       } catch (error) {
         toast.error(error.message);
       } finally {

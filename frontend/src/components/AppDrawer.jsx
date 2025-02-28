@@ -5,8 +5,8 @@ const AppDrawer = ({ drawerOpen, toggleDrawer, logout }) => {
   const navigate = useNavigate();
 
   return (
-    <Drawer anchor="right" open={drawerOpen} onClose={() => toggleDrawer(false)}>
-      <div className="w-64 p-4" onKeyDown={() => toggleDrawer(false)}>
+    <Drawer anchor="right" open={drawerOpen} onClose={() => toggleDrawer(false)} >
+      <div className="w-64 p-4" onKeyDown={() => toggleDrawer(false)} >
         <h2 className="text-xl font-bold mb-4">Profile Options</h2>
         <List>
           <ListItem button onClick={() => navigate('/profile')}>
