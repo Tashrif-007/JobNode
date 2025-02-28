@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import jwt from 'jsonwebtoken';
+import {getReceiverSocketId, io } from '../socket/socket.js'
 
 const prisma = new PrismaClient();
 
@@ -56,6 +57,10 @@ export const sendMessage = async (req, res) => {
                 conversationId: conversation.id
             }
         });
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if(receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage)
+        }
 
         res.status(201).json(newMessage);
     } catch (error) {
@@ -90,7 +95,7 @@ export const getMessages = async (req,res) => {
             return res.status(404).json({ error: "Conversation not found" });
         }
 
-        const messages = await prisma.Message.findMany({
+        const messages = await prisma.message.findMany({
             where: { conversationId: conversation.id},
             orderBy: { createdAt: "asc" }
         });

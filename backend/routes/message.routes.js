@@ -5,6 +5,6 @@ const messageRouter = express.Router();
 
 messageRouter.post("/send/:id", sendMessage);
 
-messageRouter.get("/get/:id", getMessages);
+messageRouter.get("/getMessages/:id", getMessages);
 
 export default messageRouter;
