@@ -8,7 +8,7 @@ const ApplicationCard = ({ application }) => {
           {application.jobPost.position}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          <strong>Company:</strong> {application.jobPost.companyName}
+          <strong>Company:</strong> {application.jobPost.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           <strong>Location:</strong> {application.jobPost.location}
