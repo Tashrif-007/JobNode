@@ -2,20 +2,17 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Get users the logged-in user has had conversations with
 export const getConversations = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id); // Get logged-in user ID from params
+    const userId = parseInt(req.params.id); 
 
-    // Find all conversations where the user is involved
     const conversations = await prisma.conversation.findMany({
       where: {
         OR: [{ user1: userId }, { user2: userId }],
       },
-      select: { user1: true, user2: true }, // Fetch only user1 and user2
+      select: { user1: true, user2: true }, 
     });
 
-    // Extract unique user IDs (excluding the logged-in user)
     const userIds = [
       ...new Set(
         conversations.flatMap(({ user1, user2 }) =>
@@ -24,7 +21,6 @@ export const getConversations = async (req, res) => {
       ),
     ];
 
-    // Fetch users from the User table based on extracted user IDs
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
       select: { id: true, name: true, email: true },
@@ -36,3 +32,18 @@ export const getConversations = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const createConversation = async (req,res) => {
+  try {
+    const {senderId, receiverId} = req.body;
+    const conversation  =await prisma.conversation.create({
+      data: {
+        user1: senderId,
+        user2: receiverId,
+      },
+    });
+    res.status(201).json(conversation);
+  } catch (error) {
+    res.status(500).json({error: error.message});
+  }
+}

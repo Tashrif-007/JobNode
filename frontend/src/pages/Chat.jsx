@@ -19,7 +19,11 @@ const Chat = () => {
     sendMessage(newMessage);
     setNewMessage("");
   };
-  console.log(messages)
+  const handleKeySendMessage = (e) => {
+    if(e.key==='Enter') {
+      handleSendMessage();
+    }
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -84,6 +88,7 @@ const Chat = () => {
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
                 className="flex-1 p-2 border border-gray-300 rounded-lg outline-none"
+                onKeyDown={handleKeySendMessage}
               />
               <button
                 onClick={handleSendMessage}

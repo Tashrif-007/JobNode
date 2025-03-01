@@ -1,21 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Assuming useAuth hook is imported
-
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext'; 
+import { useNavigate } from 'react-router-dom';
+import ApplicationCard from '../components/ApplicationCard'
 const JobApplications = () => {
-  // Set up state variables for applications
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // Use useAuth hook to get user info
-  const { user } = useAuth(); // This will give the user object
-
+  const { user } = useAuth(); 
+  const handleChat = async (receiverId) => {
+    try {
+      const senderId = user.userId;
+      console.log(applications)
+      console.log(senderId, receiverId);
+      const res = await fetch("http://localhost:3500/conversation/createConversation", {
+        method: "POST",
+        body: JSON.stringify({senderId, receiverId})
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error(error.message);
+    }
+    navigate('/chats');
+  }
   useEffect(() => {
     const fetchApplications = async () => {
-      // Check if user is JobSeeker or Company and fetch data accordingly
       try {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null);
 
         let response;
         const userId = user?.userId;
@@ -36,7 +53,7 @@ const JobApplications = () => {
           throw new Error('User type is not valid');
         }
       } catch (err) {
-        setError('Failed to fetch applications');
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -45,7 +62,7 @@ const JobApplications = () => {
     if (user?.userId) {
       fetchApplications();
     }
-  }, [user]); // Fetch applications when user changes
+  }, [user]); 
 
   if (loading) {
     return <div>Loading...</div>;
@@ -97,37 +114,8 @@ const JobApplications = () => {
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Render application cards */}
           {applications.length > 0 ? (
-            applications.map((app) => (
-              <div key={app.applicationId} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-700 text-white p-4">
-                  <h3 className="text-xl font-bold mb-2">{app.title}</h3>
-                  <div className="text-sm">{app.jobPost.name}</div>
-                </div>
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-600">{app.jobPost.location}</span>
-                    <span
-                      className={`px-3 py-1 text-white rounded-full text-xs ${
-                        app.status === 'Pending'
-                          ? 'bg-blue-500'
-                          : app.status === 'Accepted'
-                          ? 'bg-green-500'
-                          : app.status === 'Interview'
-                          ? 'bg-orange-500'
-                          : 'bg-red-500'
-                      }`}
-                    >
-                      {app.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-700">
-                    <strong>Salary:</strong> {app.jobPost.salary}
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    <strong>Experience Required:</strong> {app.jobPost.experience}
-                  </p>
-                </div>
-              </div>
+            applications.map((app,idx) => (
+              <ApplicationCard app={app} key={idx}/>
             ))
           ) : (
             <div>No applications found</div>
