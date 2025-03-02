@@ -20,7 +20,7 @@ export const servicesData = [
     {
       title: "Recommendations",
       description: "Get your personalized recommendations.",
-      icon: "💬",
+      icon: "⭐",
       link: "/recommend",
     },
     
