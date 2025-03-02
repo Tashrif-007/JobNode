@@ -7,7 +7,7 @@ const ApplicationCard = ({ app }) => {
   const { user } = useAuth();
   const {setSelectedConversation} = useConversation();
   const {data,loading} = useGetUser(app.userId);
-  console.log(data)
+  console.log(app.cvPath)
   const handleChat = async (receiverId) => {
     try {
       const senderId = user.userId;
@@ -57,9 +57,9 @@ const ApplicationCard = ({ app }) => {
         <p className="text-sm text-gray-700"><strong>Salary:</strong> {app.jobPost.salary}</p>
         <p className="text-sm text-gray-700"><strong>Experience Required:</strong> {app.jobPost.experience}</p>
 
-        <div className='flex justify-between mt-4'>
-          <a href={app.cvPath} target='_blank' rel='noopener noreferrer' className='rounded-lg px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-700 text-white'>View CV</a>
-          <button className='px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-700 text-white' onClick={() => handleChat(app.userId)}>Chat</button>
+        <div className={`flex ${user.userType==='JobSeeker'?"justify-center":"justify-between"} mt-4`}>
+          <a href={app.cvPath} download target='_blank' rel='noopener noreferrer' className='rounded-lg px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-700 text-white'>View CV</a>
+          {user.userType==='Company' && <button className='px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-700 text-white' onClick={() => handleChat(app.userId)}>Chat</button>}
         </div>
       </div>
     </div>
