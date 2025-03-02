@@ -1,7 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const prisma = new PrismaClient();
+const __filename  = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const applyToPost = async (req, res) => {
   const { userId } = req.body; 
@@ -105,3 +109,16 @@ export const getApplicationsByCompany = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+export const downloadCV = async (req,res) => {
+  const {filename} = req.params;
+  const filePath = path.join(__dirname, "..", "middlewares/uploads", filename);
+
+  res.download(filePath, filename, (err)=> {
+    if(err) {
+      console.error(err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  })
+}
