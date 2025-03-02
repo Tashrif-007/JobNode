@@ -12,6 +12,7 @@ export const applyToPost = async (req, res) => {
   const { id: jobPostId } = req.params; 
   const cvPath = req.file?.path; 
   const {status} = req.body;
+  const {name} = req.body;
   try {
 
     const decoded = jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET);
@@ -25,6 +26,7 @@ export const applyToPost = async (req, res) => {
 
     const application = await prisma.apply.create({
       data: {
+        userName: name,
         userId: parseInt(userId),
         jobPostId: parseInt(jobPostId),
         cvPath,
@@ -87,6 +89,7 @@ export const getApplicationsByCompany = async (req, res) => {
         ...acc,
         ...jobPost.applications.map((application) => ({
           applicationId: application.applicationId,
+          userName: application.userName,
           userId: application.userId,
           status: application.status,
           cvPath: application.cvPath,

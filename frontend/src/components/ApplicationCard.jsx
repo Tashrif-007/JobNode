@@ -1,14 +1,12 @@
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import useConversation from '../zustand/useConversation'
-import useGetUser from '../hooks/useGetUser';
 import { useState } from 'react';
 
 const ApplicationCard = ({ app }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { setSelectedConversation } = useConversation();
-  const { data, loading } = useGetUser(app.userId);
   const [status, setStatus] = useState(app.status);
   const cvPath = app.cvPath.split("/").pop();
   const handleChat = async (receiverId) => {
@@ -53,25 +51,21 @@ const ApplicationCard = ({ app }) => {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all">
       <div className="bg-gradient-to-r from-blue-500 to-indigo-700 text-white p-4">
-        <h4 className="text-xl font-bold mb-2">{data.name}</h4>
+        <h4 className="text-xl font-bold mb-2">{app.userName}</h4>
         <div className="text-sm">{app.jobPost.name}</div>
       </div>
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm text-gray-600">{app.jobPost.location}</span>
           <span className={`px-3 py-1 text-white rounded-full text-xs ${
-            app.status === 'Pending' ? 'bg-blue-500' :
-              app.status === 'Accepted' ? 'bg-green-500' :
-                app.status === 'Interview' ? 'bg-orange-500' : 'bg-red-500'
+            status === 'Pending' ? 'bg-blue-500' :
+              status === 'Accepted' ? 'bg-green-500' :
+                status === 'Interview' ? 'bg-orange-500' : 'bg-red-500'
             }`}>
-            {app.status}
+            {status}
           </span>
         </div>
         <p className="text-sm text-gray-700"><strong>Salary:</strong> {app.jobPost.salary}</p>

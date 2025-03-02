@@ -44,22 +44,29 @@ const JobApplications = () => {
     if (user?.userId) {
       fetchApplications();
     }
-  }, [user,filterStatus]);
+  }, [user]);
 
   useEffect(() => {
     const filterApplications = () => {
-      if(filterStatus==='All') {
-        setFilteredApplications(applications);
-        return;
+      let filtered = applications;
+
+      // Filter by Status
+      if (filterStatus !== "All") {
+        filtered = filtered.filter((app) => app.status === filterStatus);
       }
-      const filtered = applications.filter((app) => {
-        return app.status === filterStatus;
-      })
-      console.log(filtered);
+
+      // Search by userName
+      if (searchQuery.trim() !== "") {
+        filtered = filtered.filter((app) =>
+          app.userName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
       setFilteredApplications(filtered);
-    }
+    };
+
     filterApplications();
-  },[filterStatus,applications])
+  }, [filterStatus, searchQuery, applications]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -70,7 +77,10 @@ const JobApplications = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-blue-800">My Applications</h1>
           <button
-            onClick={() => setSearchQuery("")}
+            onClick={() => {
+              setSearchQuery("");
+              setFilterStatus("All");
+            }}
             className="flex items-center space-x-2 px-4 py-2 bg-white text-blue-500 shadow-sm rounded-lg hover:bg-blue-50"
           >
             <i className="fas fa-sync-alt"></i>
@@ -80,7 +90,7 @@ const JobApplications = () => {
         {/* Search and Filter */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex space-x-6">
-            {["All", "Pending", "Accepted", "Rejected","Interview"].map((status) => (
+            {["All", "Pending", "Accepted", "Rejected", "Interview"].map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
@@ -97,7 +107,7 @@ const JobApplications = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-grow p-2 outline-none text-sm"
-              placeholder="Search applications by title or company"
+              placeholder="Search applications by user name"
             />
             <i className="fas fa-search text-blue-500 px-3"></i>
           </div>
@@ -108,9 +118,7 @@ const JobApplications = () => {
         {/* Applications List */}
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredApplications.length > 0 ? (
-            filteredApplications.map((app, idx) => (
-              <ApplicationCard app={app} key={idx} />
-            ))
+            filteredApplications.map((app, idx) => <ApplicationCard app={app} key={idx} />)
           ) : (
             <div>No applications found</div>
           )}

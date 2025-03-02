@@ -9,7 +9,6 @@ const ApplyPage = () => {
   const navigate = useNavigate();
   const location = useLocation(); 
   const { post } = location.state || {}; 
-
   const [cv, setCv] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -22,6 +21,7 @@ const ApplyPage = () => {
 
     const formData = new FormData();
     formData.append("cv", cv);
+    formData.append("name", user.name);
     formData.append("userId", user.userId); 
     formData.append("status", "Pending");
 

@@ -89,6 +89,7 @@ model JobSeekerReqSkills {
 model Apply {
   applicationId Int      @id @default(autoincrement())
   userId   Int
+  userName String
   jobPostId     Int
   status        String   // Can be 'Pending', 'Accepted', 'Rejected', etc.
   dateCreated   DateTime @default(now())
