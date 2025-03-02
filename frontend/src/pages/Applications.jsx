@@ -6,12 +6,10 @@ import useGetUser from "../hooks/useGetUser";
 const JobApplications = () => {
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
-  const [userDetails, setUserDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  
   const { user } = useAuth();
 
   useEffect(() => {
@@ -46,50 +44,22 @@ const JobApplications = () => {
     if (user?.userId) {
       fetchApplications();
     }
-  }, [user]);
+  }, [user,filterStatus]);
 
-  // Fetch user details for each application
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      const userDataMap = {};
-      for (const app of applications) {
-        if (!app.userId) continue;
-
-        // Use the custom hook to fetch user data
-        const { data } = useGetUser(app.userId);
-        if (data) {
-          userDataMap[app.userId] = data.name; // Store user name as job title
-        }
+    const filterApplications = () => {
+      if(filterStatus==='All') {
+        setFilteredApplications(applications);
+        return;
       }
-      setUserDetails(userDataMap);
-    };
-
-    if (applications.length > 0) {
-      fetchUserDetails();
+      const filtered = applications.filter((app) => {
+        return app.status === filterStatus;
+      })
+      console.log(filtered);
+      setFilteredApplications(filtered);
     }
-  }, [applications]);
-
-  // Handle Search and Filter Logic
-  useEffect(() => {
-    let filtered = applications.map((app) => ({
-      ...app,
-      jobTitle: userDetails[app.userId] || "Unknown", // Use fetched user name as job title
-    }));
-
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (app) =>
-          app.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          app.jobPost.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (filterStatus !== "All") {
-      filtered = filtered.filter((app) => app.status === filterStatus);
-    }
-
-    setFilteredApplications(filtered);
-  }, [searchQuery, filterStatus, applications, userDetails]);
+    filterApplications();
+  },[filterStatus,applications])
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -110,11 +80,11 @@ const JobApplications = () => {
         {/* Search and Filter */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex space-x-6">
-            {["All", "Pending", "Accepted", "Rejected"].map((status) => (
+            {["All", "Pending", "Accepted", "Rejected","Interview"].map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`text-${filterStatus === status ? "blue" : "gray"}-500 font-semibold`}
+                className={`text-${filterStatus === status ? "blue-500 underline" : "gray-500"} font-semibold`}
               >
                 {status}
               </button>
@@ -139,7 +109,7 @@ const JobApplications = () => {
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredApplications.length > 0 ? (
             filteredApplications.map((app, idx) => (
-              <ApplicationCard app={app} key={idx} title={userDetails[app.userId] || "Unknown"} />
+              <ApplicationCard app={app} key={idx} />
             ))
           ) : (
             <div>No applications found</div>

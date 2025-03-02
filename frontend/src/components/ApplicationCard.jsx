@@ -11,7 +11,6 @@ const ApplicationCard = ({ app }) => {
   const { data, loading } = useGetUser(app.userId);
   const [status, setStatus] = useState(app.status);
   const cvPath = app.cvPath.split("/").pop();
-
   const handleChat = async (receiverId) => {
     try {
       const senderId = user.userId;
@@ -68,11 +67,11 @@ const ApplicationCard = ({ app }) => {
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm text-gray-600">{app.jobPost.location}</span>
           <span className={`px-3 py-1 text-white rounded-full text-xs ${
-            status === 'Pending' ? 'bg-blue-500' :
-              status === 'Accepted' ? 'bg-green-500' :
-                status === 'Interview' ? 'bg-orange-500' : 'bg-red-500'
+            app.status === 'Pending' ? 'bg-blue-500' :
+              app.status === 'Accepted' ? 'bg-green-500' :
+                app.status === 'Interview' ? 'bg-orange-500' : 'bg-red-500'
             }`}>
-            {status}
+            {app.status}
           </span>
         </div>
         <p className="text-sm text-gray-700"><strong>Salary:</strong> {app.jobPost.salary}</p>
