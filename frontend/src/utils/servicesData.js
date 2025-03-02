@@ -17,5 +17,12 @@ export const servicesData = [
       icon: "💬",
       link: "/chats",
     },
+    {
+      title: "Recommendations",
+      description: "Get your personalized recommendations.",
+      icon: "💬",
+      link: "/recommend",
+    },
+    
   ];
   

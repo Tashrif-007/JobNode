@@ -11,6 +11,7 @@ import ApplyPage from './pages/Apply';
 import Applications from './pages/Applications';
 import Profile from './pages/Profile';
 import Chat from './pages/Chat';
+import RecommendedPosts from './pages/Recommend';
 
 const App = () => {
   return (
@@ -28,6 +29,8 @@ const App = () => {
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password' element={<ResetPassword />}/>
           <Route path='/profile' element={<Profile />}/>
+          <Route path='/recommend' element={<RecommendedPosts />}/>
+
         </Routes>
       </div>
     // </Router>
