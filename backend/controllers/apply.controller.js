@@ -111,6 +111,41 @@ export const getApplicationsByCompany = async (req, res) => {
 };
 
 
+
+export const updateApplicationStatus = async (req, res) => {
+  const { applicationId } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Validate if the status is allowed
+    const allowedStatuses = ['Pending', 'Accepted', 'Rejected', 'Interview'];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    // Find application by ID
+    const application = await prisma.apply.findUnique({
+      where: { applicationId: parseInt(applicationId) },
+    });
+
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    // Update status
+    const updatedApplication = await prisma.apply.update({
+      where: { applicationId: parseInt(applicationId) },
+      data: { status },
+    });
+
+    res.status(200).json(updatedApplication);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong', error: error.message });
+  }
+};
+
+
 export const downloadCV = async (req,res) => {
   const {filename} = req.params;
   const filePath = path.join(__dirname, "..", "middlewares/uploads", filename);
