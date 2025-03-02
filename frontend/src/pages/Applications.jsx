@@ -6,12 +6,10 @@ import useGetUser from "../hooks/useGetUser";
 const JobApplications = () => {
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
-  const [userDetails, setUserDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  
   const { user } = useAuth();
 
   useEffect(() => {
@@ -48,48 +46,27 @@ const JobApplications = () => {
     }
   }, [user]);
 
-  // Fetch user details for each application
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      const userDataMap = {};
-      for (const app of applications) {
-        if (!app.userId) continue;
+    const filterApplications = () => {
+      let filtered = applications;
 
-        // Use the custom hook to fetch user data
-        const { data } = useGetUser(app.userId);
-        if (data) {
-          userDataMap[app.userId] = data.name; // Store user name as job title
-        }
+      // Filter by Status
+      if (filterStatus !== "All") {
+        filtered = filtered.filter((app) => app.status === filterStatus);
       }
-      setUserDetails(userDataMap);
+
+      // Search by userName
+      if (searchQuery.trim() !== "") {
+        filtered = filtered.filter((app) =>
+          app.userName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      setFilteredApplications(filtered);
     };
 
-    if (applications.length > 0) {
-      fetchUserDetails();
-    }
-  }, [applications]);
-
-  // Handle Search and Filter Logic
-  useEffect(() => {
-    let filtered = applications.map((app) => ({
-      ...app,
-      jobTitle: userDetails[app.userId] || "Unknown", // Use fetched user name as job title
-    }));
-
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (app) =>
-          app.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          app.jobPost.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (filterStatus !== "All") {
-      filtered = filtered.filter((app) => app.status === filterStatus);
-    }
-
-    setFilteredApplications(filtered);
-  }, [searchQuery, filterStatus, applications, userDetails]);
+    filterApplications();
+  }, [filterStatus, searchQuery, applications]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -100,7 +77,10 @@ const JobApplications = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-blue-800">My Applications</h1>
           <button
-            onClick={() => setSearchQuery("")}
+            onClick={() => {
+              setSearchQuery("");
+              setFilterStatus("All");
+            }}
             className="flex items-center space-x-2 px-4 py-2 bg-white text-blue-500 shadow-sm rounded-lg hover:bg-blue-50"
           >
             <i className="fas fa-sync-alt"></i>
@@ -110,11 +90,11 @@ const JobApplications = () => {
         {/* Search and Filter */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex space-x-6">
-            {["All", "Pending", "Accepted", "Rejected"].map((status) => (
+            {["All", "Pending", "Accepted", "Rejected", "Interview"].map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`text-${filterStatus === status ? "blue" : "gray"}-500 font-semibold`}
+                className={`text-${filterStatus === status ? "blue-500 underline" : "gray-500"} font-semibold`}
               >
                 {status}
               </button>
@@ -127,7 +107,7 @@ const JobApplications = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-grow p-2 outline-none text-sm"
-              placeholder="Search applications by title or company"
+              placeholder="Search applications by user name"
             />
             <i className="fas fa-search text-blue-500 px-3"></i>
           </div>
@@ -138,9 +118,7 @@ const JobApplications = () => {
         {/* Applications List */}
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredApplications.length > 0 ? (
-            filteredApplications.map((app, idx) => (
-              <ApplicationCard app={app} key={idx} title={userDetails[app.userId] || "Unknown"} />
-            ))
+            filteredApplications.map((app, idx) => <ApplicationCard app={app} key={idx} />)
           ) : (
             <div>No applications found</div>
           )}

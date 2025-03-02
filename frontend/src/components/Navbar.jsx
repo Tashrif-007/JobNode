@@ -4,27 +4,27 @@ import { useAuth } from '../context/AuthContext';
 import { servicesData } from '../utils/servicesData';
 const Navbar = ({ toggleDrawer }) => {
   const { user } = useAuth();
-  const [userName, setUserName] = useState(null);
+  // const [userName, setUserName] = useState(null);
 
-  const getById = async () => {
-    try {
-      const res = await fetch(`http://localhost:3500/auth/getUserById/${user.userId}`);
-      const data = await res.json();
-      if (res.ok) {
-        setUserName(data.name);
-      } else {
-        console.error(data.error);
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
+  // const getById = async () => {
+  //   try {
+  //     const res = await fetch(`http://localhost:3500/auth/getUserById/${user.userId}`);
+  //     const data = await res.json();
+  //     if (res.ok) {
+  //       setUserName(data.name);
+  //     } else {
+  //       console.error(data.error);
+  //     }
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (user?.userId) {
-      getById();
-    }
-  }, [user?.userId]);
+  // useEffect(() => {
+  //   if (user?.userId) {
+  //     getById();
+  //   }
+  // }, [user?.userId]);
 
   return (
     <header className="container mx-auto py-4 flex justify-between items-center">
@@ -47,7 +47,7 @@ const Navbar = ({ toggleDrawer }) => {
             onClick={toggleDrawer(true)}
             className="capitalize bg-customm text-white py-3 px-6 rounded-md hover:bg-[rgba(62,7,181,1)]"
           >
-            {userName || 'Loading...'}
+            {user.name || 'Loading...'}
           </button>
         ) : (
           <Link to="/login">
