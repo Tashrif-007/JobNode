@@ -9,7 +9,7 @@ applyRouter.get("/getApplicationsById/:userId", getApplicationsById);
 
 applyRouter.get("/getApplicationsByCompany/:userId",getApplicationsByCompany);
 
-applyRouter.post("/updateStatus/:applicationId", updateApplicationStatus);
+applyRouter.put("/updateStatus/:applicationId", updateApplicationStatus);
 
 applyRouter.get("/download/:filename", downloadCV);
 
