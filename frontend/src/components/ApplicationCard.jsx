@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useConversation from '../zustand/useConversation'
 import { useState } from 'react';
 
-const ApplicationCard = ({ app }) => {
+const ApplicationCard = ({ app, newStatuss }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { setSelectedConversation } = useConversation();
@@ -61,11 +61,11 @@ const ApplicationCard = ({ app }) => {
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm text-gray-600">{app.jobPost.location}</span>
           <span className={`px-3 py-1 text-white rounded-full text-xs ${
-            status === 'Pending' ? 'bg-blue-500' :
-              status === 'Accepted' ? 'bg-green-500' :
-                status === 'Interview' ? 'bg-orange-500' : 'bg-red-500'
+            newStatuss === 'Pending' ? 'bg-blue-500' :
+              newStatuss === 'Accepted' ? 'bg-green-500' :
+                newStatuss === 'Interview' ? 'bg-orange-500' : 'bg-red-500'
             }`}>
-            {status}
+            {newStatuss}
           </span>
         </div>
         <p className="text-sm text-gray-700"><strong>Salary:</strong> {app.jobPost.salary}</p>
