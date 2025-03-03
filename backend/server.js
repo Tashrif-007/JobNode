@@ -8,6 +8,7 @@ import recRouter from './routes/recommend.routes.js';
 import messageRouter from './routes/message.routes.js';
 import conversationRouter from './routes/conversation.routes.js';
 import {app,server} from "./socket/socket.js";
+import offerRouter from './routes/offers.routes.js';
 // const app = express();
 
 const PORT = process.env.PORT || 3500;
@@ -23,6 +24,7 @@ app.use("/apply", applyRouter);
 app.use("/rec",recRouter);
 app.use("/message", messageRouter);
 app.use("/conversation", conversationRouter);
+app.use("/offer", offerRouter);
 
 app.get("*", (req,res) => {
     res.send("JobNode App!");
