@@ -118,7 +118,7 @@ const JobApplications = () => {
         {/* Applications List */}
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredApplications.length > 0 ? (
-            filteredApplications.map((app, idx) => <ApplicationCard app={app} key={idx} />)
+            filteredApplications.map((app, idx) => <ApplicationCard app={app} newStatuss={app.status} key={idx} />)
           ) : (
             <div>No applications found</div>
           )}
