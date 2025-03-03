@@ -25,6 +25,10 @@ model User {
   conversations2 Conversation[] @relation(name: "User2Conversations")
   sentMessages   Message[] @relation(name: "SentMessages")
   receivedMessages Message[] @relation(name: "ReceivedMessages")
+  companyHires    Hires[]          @relation("CompanyHires")
+  jobSeekerHires  Hires[]          @relation("JobSeekerHires")
+  companyOffers   Offers[]         @relation("CompanyOffers")
+  jobSeekerOffers Offers[]         @relation("JobSeekerOffers")
 }
 
 model JobSeeker {
@@ -97,6 +101,8 @@ model Apply {
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobPost       JobPost   @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
 
+  offers         Offers[]  @relation("applicationOffers")
+
   @@unique([userId, jobPostId]) // Ensure that a job seeker can apply only once to a specific job
 }
 
@@ -124,4 +130,30 @@ model Message {
   sender   User @relation(name: "SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   receiver User @relation(name: "ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Hires {
+  hiresId          Int      @id @default(autoincrement())
+  jobSeekerId      Int      // Reference to JobSeeker (User)
+  companyId        Int      // Reference to Company (User)
+  hireDate         DateTime @default(now())
+
+  jobSeeker        User     @relation(name: "JobSeekerHires", fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  company          User     @relation(name: "CompanyHires", fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([jobSeekerId, companyId]) // Ensures a jobSeeker is hired only once per application
+}
+
+model Offers {
+  offerId         Int      @id @default(autoincrement())
+  jobSeekerId     Int      // Reference to JobSeeker (User)
+  companyId       Int      // Reference to Company (User)
+  applicationId   Int
+  status          String   // Can be 'Pending', 'Accepted', 'Rejected'
+  offerLetterPath String   // Path to the offer letter
+  offerDate       DateTime @default(now())
+
+  jobSeeker       User     @relation(name: "JobSeekerOffers", fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  company         User     @relation(name: "CompanyOffers", fields: [companyId], references: [id], onDelete: Cascade)
+  application     Apply     @relation(name: "applicationOffers", fields: [applicationId], references: [applicationId], onDelete: Cascade)
 }

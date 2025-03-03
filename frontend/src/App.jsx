@@ -12,6 +12,7 @@ import Applications from './pages/Applications';
 import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import RecommendedPosts from './pages/Recommend';
+import JobOffers from './pages/Offer';
 
 const App = () => {
   return (
@@ -30,7 +31,7 @@ const App = () => {
           <Route path='/reset-password' element={<ResetPassword />}/>
           <Route path='/profile' element={<Profile />}/>
           <Route path='/recommend' element={<RecommendedPosts />}/>
-
+          <Route path='/offer' element={<JobOffers />}/>
         </Routes>
       </div>
     // </Router>
