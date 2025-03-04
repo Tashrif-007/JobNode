@@ -37,6 +37,7 @@ model JobSeeker {
   salaryExpectation Float?
   location         String?
   experience       Int?
+  experienceName   String?
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Relationship with skills
   requiredSkills   JobSeekerReqSkills[]

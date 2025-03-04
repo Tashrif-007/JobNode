@@ -16,9 +16,9 @@ import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const userType = user?.userType;
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
-
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -114,16 +114,17 @@ const Navbar = () => {
           >
             Recommendations
           </Button>
+          {userType==='JobSeeker' &&
           <Button 
-            color="inherit" 
-            component={Link} 
-            to="/offer"
-            sx={{ textTransform: 'none', fontWeight: 'medium' }}
-          >
-            Offers
-          </Button>
+          color="inherit" 
+          component={Link} 
+          to="/offer"
+          sx={{ textTransform: 'none', fontWeight: 'medium' }}
+        >
+          Offers
+        </Button>
+        }
           
-
           {/* User Profile or Login */}
           {user ? (
             <>
