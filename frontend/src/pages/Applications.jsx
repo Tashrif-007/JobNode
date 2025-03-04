@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import ApplicationCard from "../components/ApplicationCard";
-import useGetUser from "../hooks/useGetUser";
 
 const JobApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -50,12 +49,10 @@ const JobApplications = () => {
     const filterApplications = () => {
       let filtered = applications;
 
-      // Filter by Status
       if (filterStatus !== "All") {
         filtered = filtered.filter((app) => app.status === filterStatus);
       }
 
-      // Search by userName
       if (searchQuery.trim() !== "") {
         filtered = filtered.filter((app) =>
           app.userName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -67,6 +64,15 @@ const JobApplications = () => {
 
     filterApplications();
   }, [filterStatus, searchQuery, applications]);
+
+  // Function to update application status in the state
+  const updateApplicationStatus = (applicationId, newStatus) => {
+    setApplications((prevApps) =>
+      prevApps.map((app) =>
+        app.applicationId === applicationId ? { ...app, status: newStatus } : app
+      )
+    );
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -87,7 +93,6 @@ const JobApplications = () => {
           </button>
         </div>
 
-        {/* Search and Filter */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex space-x-6">
             {["All", "Pending", "Accepted", "Rejected", "Interview"].map((status) => (
@@ -115,10 +120,15 @@ const JobApplications = () => {
 
         <hr className="border-t border-gray-300 mb-6" />
 
-        {/* Applications List */}
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredApplications.length > 0 ? (
-            filteredApplications.map((app, idx) => <ApplicationCard app={app} newStatuss={app.status} key={idx} />)
+            filteredApplications.map((app) => (
+              <ApplicationCard
+                key={app.applicationId}
+                app={app}
+                onStatusChange={updateApplicationStatus}
+              />
+            ))
           ) : (
             <div>No applications found</div>
           )}
