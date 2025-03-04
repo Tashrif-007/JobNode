@@ -21,7 +21,6 @@ const Home = () => {
   return (
     <div className="bg-gray-100 text-gray-800">
       <Navbar toggleDrawer={toggleDrawer} />
-      <AppDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} logout={logout} />
       <Hero />
       <About />
       <Services />

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
-    <section className="container mx-auto py-12 flex flex-col md:flex-row items-center justify-between">
+    <section className="container mx-auto py-12 flex flex-col md:flex-row items-center justify-between mt-[64px]">
       <div className="md:w-1/2">
         <h2 className="text-4xl font-bold mb-4">
           Your Career, Just a <strong className="text-customm">Node</strong> Away
