@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import useGetConversations from "../hooks/useGetConversations";
 import useConversation from "../zustand/useConversation";
 import useGetMessages from "../hooks/useGetMessages";
 import useSendMessage from "../hooks/useSendMessage";
 import useListenMessages from "../hooks/useListenMessages";
-import { useAuth } from "../context/AuthContext";
+import { FaEllipsisV, FaTrashAlt } from "react-icons/fa"; // For 3-dot and trashbin icons
 
 const Chat = () => {
   const { user } = useAuth();
@@ -14,16 +15,61 @@ const Chat = () => {
   const { sendMessage, loading: sending } = useSendMessage();
   useListenMessages(); // Real-time message listening
   const [newMessage, setNewMessage] = useState("");
+  const [showMenu, setShowMenu] = useState(null); // Track which conversation has the menu open
+  const [hoveredMessageId, setHoveredMessageId] = useState(null); // Track the hovered message for delete button
+
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
     setNewMessage("");
   };
+
   const handleKeySendMessage = (e) => {
-    if(e.key==='Enter') {
+    if (e.key === "Enter") {
       handleSendMessage();
     }
-  }
+  };
+
+  const handleDeleteConversation = async (conversationId) => {
+    try {
+      console.log(conversationId)
+      const response = await fetch(`http://localhost:3500/conversation/delete/${conversationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to delete conversation');
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      throw new Error('Error deleting conversation');
+    }
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      const response = await fetch(`http://localhost:3500/message/delete/${messageId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to delete message');
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      throw new Error('Error deleting message');
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -35,16 +81,37 @@ const Chat = () => {
         ) : (
           <div className="space-y-2">
             {conversations.map((conv) => (
-              <div
-                key={conv.id}
-                className={`p-3 rounded-lg cursor-pointer ${
-                  selectedConversation?.id === conv.id
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-                onClick={() => setSelectedConversation(conv)}
-              >
-                {conv.name}
+              <div key={conv.id} className="relative">
+                <div
+                  className={`p-3 rounded-lg cursor-pointer ${
+                    selectedConversation?.id === conv.id
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setSelectedConversation(conv)}
+                >
+                  {conv.name} 
+                </div>
+
+                {/* 3-Dot Menu for Conversation */}
+                <div className="absolute top-2 right-2">
+                  <button
+                    onClick={() => setShowMenu(showMenu === conv.id ? null : conv.id)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <FaEllipsisV />
+                  </button>
+                  {showMenu === conv.id && (
+                    <div className="absolute right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-md">
+                      <button
+                        onClick={() => handleDeleteConversation(conv.id)}
+                        className="block px-4 py-2 text-red-500 hover:bg-gray-100"
+                      >
+                        Delete Conversation
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -68,13 +135,24 @@ const Chat = () => {
                 messages.map((msg, index) => (
                   <div
                     key={index}
-                    className={`p-2 rounded-lg max-w-xs ${
+                    className={`p-2 rounded-lg max-w-xs relative ${
                       msg.senderId === user.userId
                         ? "bg-blue-500 text-white self-end ml-auto"
                         : "bg-gray-300 text-black self-start"
                     }`}
+                    onMouseEnter={() => setHoveredMessageId(msg.id)}
+                    onMouseLeave={() => setHoveredMessageId(null)}
                   >
-                    {msg.content}
+                    {msg.content} 
+                    {/* Trash Bin Button */}
+                    {hoveredMessageId === msg.id && (
+                      <button
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        className="absolute top-1 right-1 text-red-500 hover:text-red-700"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    )}
                   </div>
                 ))
               )}

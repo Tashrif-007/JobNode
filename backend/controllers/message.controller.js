@@ -107,3 +107,30 @@ export const getMessages = async (req,res) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+
+// Delete a message
+export const deleteMessage = async (req, res) => {
+  const { messageId } = req.params;
+
+  try {
+    // Check if the message exists
+    const message = await prisma.message.findUnique({
+      where: { id: parseInt(messageId) },
+    });
+
+    if (!message) {
+      return res.status(404).json({ error: 'Message not found' });
+    }
+
+    // Delete the message
+    await prisma.message.delete({
+      where: { id: parseInt(messageId) },
+    });
+
+    return res.status(200).json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Something went wrong while deleting the message' });
+  }
+};
