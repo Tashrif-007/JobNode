@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { Link, useNavigate } from 'react-router-dom';
+import RegistrationModal from '../components/RegistrationModal'
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const SignUp = () => {
   });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);  // State to manage modal visibility
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +49,8 @@ const SignUp = () => {
         throw new Error(errData.message || "Registration failed");
       }
 
-      alert("Registration successful!");
+      // Show modal on successful registration
+      setOpenModal(true);
       setFormData({
         email: '',
         name: '',
@@ -54,12 +58,16 @@ const SignUp = () => {
         userType: 'JobSeeker',
       });
       setError(null);
-      navigate("/login");
     } catch (error) {
       setError(error.message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    navigate("/login");
   };
 
   const ColorButton = styled(Button)(() => ({
@@ -145,6 +153,13 @@ const SignUp = () => {
           <img src='./loginImg.jpeg' alt='Illustration' className='w-full h-auto' />
         </div>
       </div>
+
+      {/* Modal for successful registration */}
+      <RegistrationModal 
+      open={openModal}
+      onClose={handleCloseModal}
+      userType={formData.userType}
+      />
     </div>
   );
 };

@@ -162,7 +162,7 @@ const Posts = () => {
                     ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
                     : "No skills listed"
                 }
-                onApply={() => navigate(`/posts/apply/${post.id}`, { state: { post } })}
+                jobPostId={post.id}
               />
             ))}
           </div>
