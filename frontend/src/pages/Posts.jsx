@@ -130,12 +130,11 @@ const Posts = () => {
 
         {/* Search Button */}
         <button
-          onClick={fetchPosts}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-          disabled={loading}
-        >
-          {loading ? "Searching..." : "Search"}
-        </button>
+            onClick={fetchPosts}
+            className="capitalize bg-customm text-white py-3 px-6 rounded-md hover:bg-[rgba(62,7,181,1)]"
+          >
+            {loading ? "searching": "search"}
+          </button>
       </div>
 
       {/* Job Posts Section */}

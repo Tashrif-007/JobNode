@@ -113,6 +113,25 @@ export const getApplicationsByCompany = async (req, res) => {
   }
 };
 
+export const applicationExists = async (req,res) => {
+  const {jobPostId, jobSeekerId} = req.body;
+  try {
+    const exists = await prisma.apply.findFirst({
+      where: {
+        jobPostId: jobPostId,
+        userId: jobSeekerId,
+      },
+    });
+
+    if(exists) {
+      return res.status(200).json({message: "exists"});
+    }
+    res.status(400).json({message: "does not exist"});
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({message: "Internal server error"});
+  }
+}
 
 
 export const updateApplicationStatus = async (req, res) => {
