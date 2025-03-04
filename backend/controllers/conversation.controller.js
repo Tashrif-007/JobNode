@@ -47,3 +47,36 @@ export const createConversation = async (req,res) => {
     res.status(500).json({error: error.message});
   }
 }
+
+
+// Delete a conversation
+export const deleteConversation = async (req, res) => {
+  const { conversationId } = req.params;
+
+  try {
+    // Check if the conversation exists
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: parseInt(conversationId) },
+      include: { messages: true },  // Include messages to delete them later
+    });
+
+    if (!conversation) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+
+    // Delete associated messages first
+    await prisma.message.deleteMany({
+      where: { conversationId: parseInt(conversationId) },
+    });
+
+    // Then delete the conversation itself
+    await prisma.conversation.delete({
+      where: { id: parseInt(conversationId) },
+    });
+
+    return res.status(200).json({ message: 'Conversation and all messages deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Something went wrong while deleting the conversation' });
+  }
+};

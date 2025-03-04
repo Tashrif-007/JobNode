@@ -24,7 +24,7 @@ const Chat = () => {
       handleSendMessage();
     }
   }
-
+  console.log(messages)
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar: Conversation List */}
@@ -44,7 +44,7 @@ const Chat = () => {
                 }`}
                 onClick={() => setSelectedConversation(conv)}
               >
-                {conv.name}
+                {conv.name} {conv.id}
               </div>
             ))}
           </div>
