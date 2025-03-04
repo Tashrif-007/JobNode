@@ -10,7 +10,6 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
   const [cv, setCv] = useState(null);
   const [alreadyApplied, setAlreadyApplied] = useState(false);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const checkApplication = async () => {
       if (user?.userType === "JobSeeker") {
@@ -22,11 +21,12 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
             },
             body: JSON.stringify({
               jobPostId: jobPostId,
-              jobSeekerId: user.id,
+              jobSeekerId: user.userId,
             }),
           });
 
           const data = await response.json();
+          console.log({data})
           if (data.message === "exists") setAlreadyApplied(true);
         } catch (error) {
           console.error(error);

@@ -42,7 +42,6 @@ const Login = () => {
 
       const { token, user } = await response.json();
       localStorage.setItem('token', token);
-      alert("Login Successful");
       navigate("/");
     } catch (err) {
       setError(err.message);
