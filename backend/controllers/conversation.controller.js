@@ -4,27 +4,30 @@ const prisma = new PrismaClient();
 
 export const getConversations = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id); 
+    const userId = parseInt(req.params.id);
 
     const conversations = await prisma.conversation.findMany({
       where: {
         OR: [{ user1: userId }, { user2: userId }],
       },
-      select: { user1: true, user2: true }, 
+      select: { id: true, user1: true, user2: true },
     });
 
-    const userIds = [
-      ...new Set(
-        conversations.flatMap(({ user1, user2 }) =>
-          user1 === userId ? user2 : user1
-        )
-      ),
-    ];
+    const users = await Promise.all(
+      conversations.map(async ({ id, user1, user2 }) => {
+        const otherUserId = user1 === userId ? user2 : user1;
 
-    const users = await prisma.user.findMany({
-      where: { id: { in: userIds } },
-      select: { id: true, name: true, email: true },
-    });
+        const user = await prisma.user.findUnique({
+          where: { id: otherUserId },
+          select: { id: true, name: true, email: true },
+        });
+
+        return {
+          conversationId: id,
+          ...user,
+        };
+      })
+    );
 
     res.status(200).json({ users });
   } catch (error) {

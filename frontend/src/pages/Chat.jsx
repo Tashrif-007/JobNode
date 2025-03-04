@@ -17,7 +17,7 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [showMenu, setShowMenu] = useState(null); // Track which conversation has the menu open
   const [hoveredMessageId, setHoveredMessageId] = useState(null); // Track the hovered message for delete button
-
+  console.log(conversations)
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
@@ -32,7 +32,6 @@ const Chat = () => {
 
   const handleDeleteConversation = async (conversationId) => {
     try {
-      console.log(conversationId)
       const response = await fetch(`http://localhost:3500/conversation/delete/${conversationId}`, {
         method: 'DELETE',
         headers: {
@@ -104,7 +103,7 @@ const Chat = () => {
                   {showMenu === conv.id && (
                     <div className="absolute right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-md">
                       <button
-                        onClick={() => handleDeleteConversation(conv.id)}
+                        onClick={() => handleDeleteConversation(conv.conversationId)}
                         className="block px-4 py-2 text-red-500 hover:bg-gray-100"
                       >
                         Delete Conversation
