@@ -10,13 +10,14 @@ import {
   Avatar,
   Box
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
+  const navigate = useNavigate();
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -107,6 +108,14 @@ const Navbar = () => {
           >
             Recommendations
           </Button>
+          <Button 
+            color="inherit" 
+            component={Link} 
+            to="/offer"
+            sx={{ textTransform: 'none', fontWeight: 'medium' }}
+          >
+            Offers
+          </Button>
           
 
           {/* User Profile or Login */}
@@ -116,14 +125,14 @@ const Navbar = () => {
                 onClick={handleMenuOpen}
                 sx={{ 
                   backgroundColor: 'rgba(126,34,206,0.1)', 
-                  color: '#7E22CE' 
+                  color: 'rgb(97 27 248 / 1)' 
                 }}
               >
                 <Avatar 
                   sx={{ 
                     width: 32, 
                     height: 32, 
-                    backgroundColor: '#7E22CE' 
+                    backgroundColor: 'rgb(97 27 248 / 1)' 
                   }}
                 >
                   {getInitials()}
@@ -145,7 +154,7 @@ const Navbar = () => {
               >
                 <MenuItem 
                   onClick={() => {
-                    handleMenuClose();
+                    navigate("/profile")
                     // Navigate to profile
                   }}
                 >
