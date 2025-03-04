@@ -1,6 +1,7 @@
-
+import { useAuth } from "../context/AuthContext";
 
 const PostCard = ({ title, location, description, salaryRange, experience, skills, onApply }) => {
+  const {user}=useAuth();
   return (
     <div className="border p-6 rounded-md shadow-lg flex flex-col justify-between transition-transform duration-200 hover:scale-105">
       <div>
@@ -19,12 +20,13 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
           </p>
         </div>
       </div>
-      <button
+      {user.userType==="JobSeeker" && <button
         className="bg-primary text-white rounded-full px-6 py-3 mt-6 text-lg shadow-md transition-all hover:bg-primary-600 hover:scale-105"
         onClick={onApply}
       >
         Apply Now
-      </button>
+      </button>}
+      
     </div>
   );
 };
