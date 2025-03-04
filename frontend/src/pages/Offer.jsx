@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import OfferCard from "../components/OfferCard";
+import Navbar from "../components/Navbar";
 
 const JobOffers = () => {
   const [offers, setOffers] = useState([]);
@@ -65,7 +66,8 @@ const JobOffers = () => {
 
   return (
     <div className="container mx-auto p-10">
-      <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+      <Navbar />
+      <div className="mt-[64px] bg-white p-6 rounded-xl shadow-lg mb-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-blue-800">My Offers</h1>
           <button

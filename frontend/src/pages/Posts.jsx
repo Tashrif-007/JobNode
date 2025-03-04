@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
+import Navbar from "../components/Navbar";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]); // Stores the posts to display
@@ -68,6 +69,7 @@ const Posts = () => {
 
   return (
     <div className="min-w-full min-h-screen rounded-lg bg-white shadow-lg p-8">
+      <Navbar/>
       <header className="flex justify-between items-center">
         <h1 className="text-4xl font-title text-primary-950">Job Posts</h1>
         {user && user.userType === "Company" && (

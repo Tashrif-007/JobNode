@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
+import Navbar from "../components/Navbar";
 
 const RecommendedPosts = ({ jobSeekerId }) => {
   const [recommendedJobs, setRecommendedJobs] = useState([]);
@@ -39,6 +40,7 @@ const RecommendedPosts = ({ jobSeekerId }) => {
 
   return (
     <div className="min-w-full min-h-screen rounded-lg bg-white shadow-lg p-8">
+      <Navbar />
       <h1 className="text-4xl font-title text-primary-950">Recommended Jobs</h1>
 
       {loading ? (

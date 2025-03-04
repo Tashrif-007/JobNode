@@ -49,7 +49,7 @@ const Navbar = () => {
     >
       <Toolbar sx={{ 
         justifyContent: 'space-between', 
-        maxWidth: 1600, 
+        maxWidth: 1690, 
         margin: '0 auto', 
         padding: '15px',
         width: '100%' 
@@ -62,13 +62,19 @@ const Navbar = () => {
             style={{ 
               width: 40, 
               height: 40, 
-              marginRight: 10 
+              marginRight: 10,
+              cursor: 'pointer' 
             }} 
+            onClick={()=>navigate("/")}
           />
           <Typography 
             variant="h6" 
             component="div" 
             sx={{ fontWeight: 'bold' }}
+            onClick={()=> navigate("/")}
+            style={{
+              cursor: 'pointer',
+            }}
           >
             JobNode
           </Typography>

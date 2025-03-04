@@ -6,6 +6,7 @@ import useGetMessages from "../hooks/useGetMessages";
 import useSendMessage from "../hooks/useSendMessage";
 import useListenMessages from "../hooks/useListenMessages";
 import { FaEllipsisV, FaTrashAlt } from "react-icons/fa"; // For 3-dot and trashbin icons
+import Navbar from "../components/Navbar";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -72,8 +73,9 @@ const Chat = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
+      <Navbar />
       {/* Sidebar: Conversation List */}
-      <div className="w-1/4 bg-white p-4 border-r border-gray-300">
+      <div className="w-1/4 bg-white p-4 border-r border-gray-300 mt-[78px]">
         <h2 className="text-xl font-semibold mb-4">Conversations</h2>
         {loading ? (
           <p className="text-gray-500">Loading...</p>
