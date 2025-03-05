@@ -81,12 +81,14 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           )}
 
           {/* Chat button */}
+          {user.userType==='Company' &&
           <button
             onClick={() => handleChat(app.userId)}
             className="rounded-lg px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-700 text-white ml-2"
           >
             Chat
           </button>
+          }
         </div>
       </div>
     </div>

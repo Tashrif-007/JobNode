@@ -56,6 +56,8 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+import nodemailer from 'nodemailer';
+
 export const sendOfferLetter = async (req, res) => {
     try {
         const { jobSeekerId, companyId, status, applicationId } = req.body;
@@ -97,13 +99,47 @@ export const sendOfferLetter = async (req, res) => {
             }
         });
 
-        return res.status(201).json({ message: 'Offer created successfully', offer });
+        // Sending Offer Letter via Email
+        const mailOptions = {
+            from: `"JobNode" <${process.env.EMAIL_USER}>`,
+            to: jobSeeker.email, // Send to job seeker email
+            subject: 'Job Offer from ' + company.name,
+            html: `
+                <p>Hello ${jobSeeker.name},</p>
+                <p>We are pleased to inform you that you have been selected for the position of ${application.jobPost.position} at ${company.name}. Please find attached the official offer letter.</p>
+                <p>Congratulations!</p>
+                <p>Sincerely,</p>
+                <p>${company.name}</p>
+            `,
+            attachments: [
+                {
+                    filename: `offer_letter_${Date.now()}.pdf`,
+                    path: offerPath, // The path to the generated PDF
+                    contentType: 'application/pdf'
+                }
+            ]
+        };
+
+        // Create a transporter using your SMTP configuration
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        // Send the email
+        await transporter.sendMail(mailOptions);
+
+        return res.status(201).json({ message: 'Offer created and email sent successfully', offer });
 
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 // offerController.js
 
