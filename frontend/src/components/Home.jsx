@@ -1,11 +1,11 @@
 import Navbar from './Navbar';
-import AppDrawer from './AppDrawer';
 import Footer from './Footer';
 import Services from './Services';
 import About from './About';
 import Hero from './Hero';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import LatestJobPosts from './LatestPosts';
 
 const Home = () => {
   const { logout } = useAuth();
@@ -22,6 +22,7 @@ const Home = () => {
     <div className="bg-gray-100 text-gray-800">
       <Navbar toggleDrawer={toggleDrawer} />
       <Hero />
+      <LatestJobPosts />
       <About />
       <Services />
       <Footer />

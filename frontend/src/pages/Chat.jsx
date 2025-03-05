@@ -65,12 +65,24 @@ const Chat = () => {
         throw new Error('Failed to delete conversation');
       }
   
-      return await response.json();
+      const data = await response.json();
+  
+      // After deletion, update the conversations state
+      const updatedConversations = conversations.filter(conv => conv.id !== conversationId);
+      // Assuming you have a function or state for updating the list of conversations
+      setConversations(updatedConversations);
+  
+      // If the current conversation was deleted, reset the selected conversation
+      if (selectedConversation?.id === conversationId) {
+        setSelectedConversation(null);
+      }
+  
     } catch (error) {
       console.error('Error deleting conversation:', error);
       throw new Error('Error deleting conversation');
     }
   };
+  
 
   const handleDeleteMessage = async (messageId) => {
     try {
@@ -85,18 +97,21 @@ const Chat = () => {
         throw new Error('Failed to delete message');
       }
   
-      return await response.json();
+      // If the message was successfully deleted, update the UI by removing it from the messages state
+      setMessages((prevMessages) => prevMessages.filter(msg => msg.id !== messageId));
     } catch (error) {
       console.error('Error deleting message:', error);
       throw new Error('Error deleting message');
     }
   };
+  
 
   // Function to format timestamp
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
+  
   const ref = useRef();
   useEffect(() => {
     setTimeout(() => {
@@ -105,195 +120,216 @@ const Chat = () => {
   },[messages]);
 
   return (
-    <div>
-      <Navbar />
-    <div className="flex h-screen bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden mt-[78px]">
-      
-      
-      {/* Sidebar: Conversation List */}
-      <div className="w-1/4 bg-white shadow-xl border-r border-gray-200 mt-[78px] overflow-y-auto">
-        <div className="sticky top-0 bg-white z-10 p-4 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-            <FaComment className="mr-3 text-blue-600" />
-            Conversations
-          </h2>
-        </div>
-        
-        {loading ? (
-          <div className="text-center py-6 text-gray-500">Loading...</div>
-        ) : (
-          <div className="p-2 space-y-2">
-            {conversations.map((conv) => (
-              <div 
-                key={conv.id} 
-                className="relative group"
-                ref={openMenuConversationId === conv.id ? menuRef : null}
-                >
-                <div
-                  className={`
-                    p-3 rounded-lg cursor-pointer transition-all duration-200 
-                    ${selectedConversation?.id === conv.id 
-                      ? "bg-blue-600 text-white shadow-md" 
-                      : "bg-gray-100 hover:bg-blue-100 hover:shadow-sm"}
-                      `}
-                      onClick={() => setSelectedConversation(conv)}
-                      >
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium truncate">{conv.name}</span>
-                    
-                    {/* 3-Dot Menu for Conversation */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent selecting conversation
-                        setOpenMenuConversationId(
-                          openMenuConversationId === conv.id ? null : conv.id
-                        );
-                      }}
-                      className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                      <FaEllipsisV />
-                    </button>
-                  </div>
-                </div>
-
-                {openMenuConversationId === conv.id && (
-                  <div className="absolute right-0 top-full mt-1 z-10">
-                    <div className="bg-white border border-gray-200 rounded-lg shadow-lg">
-                      <button
-                        onClick={() => handleDeleteConversation(conv.conversationId)}
-                        className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg"
-                        >
-                        <FaTrashAlt className="inline mr-2" /> Delete
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+    <div className="flex flex-col h-screen">
+      {/* Navbar at the top, fixed */}
+      <div className="w-full">
+        <Navbar />
       </div>
+      
+      {/* Main content area - takes remaining height with flex-1 */}
+      <div className="flex flex-1 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+        
+        {/* Sidebar: Conversation List - fixed height with overflow-y-auto */}
+        <div className="w-1/4 bg-white shadow-xl border-r border-gray-200 flex flex-col">
+          <div className="p-4 border-b border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+              <FaComment className="mr-3 text-blue-600" />
+              Conversations
+            </h2>
+          </div>
+          
+          {/* Conversation list - scrollable */}
+          <div className="flex-1 overflow-y-auto">
+            {loading ? (
+              <div className="text-center py-6 text-gray-500">Loading...</div>
+            ) : (
+              <div className="p-2 space-y-2">
+                {conversations.map((conv) => (
+                  <div 
+                    key={conv.id} 
+                    className="relative group"
+                    ref={openMenuConversationId === conv.id ? menuRef : null}
+                    >
+                    <div
+                      className={`
+                        p-3 rounded-lg cursor-pointer transition-all duration-200 
+                        ${selectedConversation?.id === conv.id 
+                          ? "bg-blue-600 text-white shadow-md" 
+                          : "bg-gray-100 hover:bg-blue-100 hover:shadow-sm"}
+                          `}
+                          onClick={() => setSelectedConversation(conv)}
+                          >
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium truncate">{conv.name}</span>
+                        
+                        {/* 3-Dot Menu for Conversation */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent selecting conversation
+                            setOpenMenuConversationId(
+                              openMenuConversationId === conv.id ? null : conv.id
+                            );
+                          }}
+                          className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                          <FaEllipsisV />
+                        </button>
+                      </div>
+                    </div>
 
-      {/* Chat Window */}
-      <div className="w-3/4 flex flex-col bg-white shadow-lg rounded-tl-2xl overflow-hidden">
-        {selectedConversation ? (
-          <>
-            {/* Chat Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center mr-3">
-                  {selectedConversation.name[0].toUpperCase()}
-                </div>
-                <h3 className="font-semibold">Chat with {selectedConversation.name}</h3>
+                    {openMenuConversationId === conv.id && (
+                      <div className="absolute right-0 top-full mt-1 z-10">
+                        <div className="bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <button
+                            onClick={() => handleDeleteConversation(conv.conversationId)}
+                            className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg"
+                            >
+                            <FaTrashAlt className="inline mr-2" /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
+          </div>
+        </div>
 
-            {/* Messages Container */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-2 bg-gray-50">
-              {messagesLoading ? (
-                <div className="text-center text-gray-500">Loading messages...</div>
-              ) : (
-                messages.map((msg, index) => {
-                  // Check if this is the first message or the sender has changed
-                  const showSenderName = 
-                    index === 0 || 
-                    messages[index - 1].senderId !== msg.senderId;
-                    
+        {/* Chat Window - fixed layout with internal scrolling */}
+        <div className="w-3/4 flex flex-col bg-white shadow-lg rounded-tl-2xl overflow-hidden">
+          {selectedConversation ? (
+            <>
+              {/* Chat Header - fixed */}
+              <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center mr-3">
+                    {selectedConversation.name[0].toUpperCase()}
+                  </div>
+                  <h3 className="font-semibold">Chat with {selectedConversation.name}</h3>
+                </div>
+              </div>
+
+              {/* Messages Container - scrollable */}
+              <div className="flex-1 p-4 overflow-y-auto space-y-2 bg-gray-50">
+                {messagesLoading ? (
+                  <div className="text-center text-gray-500">Loading messages...</div>
+                ) : (
+                  messages.map((msg, index) => {
+                    // Check if this is the first message or the sender has changed
+                    const showSenderName = 
+                      index === 0 || 
+                      messages[index - 1].senderId !== msg.senderId;
+                      
                     // Check if this is the last message for this sender
                     const isLastMessageForSender = 
-                    index === messages.length - 1 || 
-                    messages[index + 1].senderId !== msg.senderId;
-                    
+                      index === messages.length - 1 || 
+                      messages[index + 1].senderId !== msg.senderId;
+                      
                     return (
                       <div
-                      key={index}
-                      className={`flex w-full flex-col ${
-                        msg.senderId === user.userId ? "items-end" : "items-start"
-                      }`}
+                        key={index}
+                        className={`flex w-full flex-col ${
+                          msg.senderId === user.userId ? "items-end" : "items-start"
+                        }`}
                       >
-                      {showSenderName && (
-                        <div className="text-xs text-gray-500 mb-1">
-                          {msg.senderId === user.userId ? 'You' : msg.senderName}
-                        </div>
-                      )}
-                      <div
-                        className={`
-                          p-2 rounded-xl relative group 
-                          max-w-md w-fit break-words cursor-pointer
-                          ${msg.senderId === user.userId
-                            ? "bg-blue-500 text-white" 
-                            : "bg-gray-200 text-gray-800"}
+                        {showSenderName && (
+                          <div className="text-xs text-gray-500 mb-1">
+                            {msg.senderId === user.userId ? 'You' : msg.senderName}
+                          </div>
+                        )}
+                        
+                        {/* Message bubble with extended click area for trash */}
+                        <div 
+                          className="relative group"
+                          onMouseEnter={() => setHoveredMessageId(msg.id)}
+                          onMouseLeave={() => setHoveredMessageId(null)}
+                        >
+                          {/* Trash can button with extended clickable area */}
+                          {msg.senderId ===user.userId && hoveredMessageId === msg.id && (
+                            <div 
+                              className={`
+                                absolute top-0 z-10 h-full flex items-center
+                                ${msg.senderId === user.userId ? 'left-[-40px] w-[40px] justify-start' : 'right-[-40px] w-[40px] justify-end'}
+                              `}
+                            >
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent timestamp toggle
+                                  handleDeleteMessage(msg.id);
+                                }}
+                                className="p-2 text-red-500 hover:text-red-700 bg-gray-100 bg-opacity-70 rounded-full"
+                              >
+                                <FaTrashAlt />
+                              </button>
+                            </div>
+                          )}
+                          
+                          {/* Message content */}
+                          <div
+                            className={`
+                              p-2 rounded-xl relative
+                              max-w-md w-fit break-words cursor-pointer
+                              ${msg.senderId === user.userId
+                                ? "bg-blue-500 text-white" 
+                                : "bg-gray-200 text-gray-800"}
                             `}
                             onClick={() => setTimestampMessageId(
                               timestampMessageId === msg.id ? null : msg.id
                             )}
-                            onMouseEnter={() => setHoveredMessageId(msg.id)}
-                            onMouseLeave={() => setHoveredMessageId(null)}
-                            >
-                        <div className="w-full px-[9px]" ref={ref}>{msg.content}</div>
+                          >
+                            <div className="w-full px-[9px]" ref={index === messages.length - 1 ? ref : null}>
+                              {msg.content}
+                            </div>
+                          </div>
+                        </div>
                         
-                        {/* Trash Bin Button */}
-                        {hoveredMessageId === msg.id && (
-                          <button
-                          onClick={() => handleDeleteMessage(msg.id)}
-                          className={`
-                            absolute top-1 text-red-500 hover:text-red-700 
-                            opacity-0 group-hover:opacity-100 transition-opacity
-                            ${msg.senderId === user.userId 
-                              ? 'left-[-25px]' 
-                              : 'right-[-25px]'}
-                              `}
-                              >
-                            <FaTrashAlt />
-                          </button>
+                        {(isLastMessageForSender || timestampMessageId === msg.id) && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            {formatTimestamp(msg.createdAt)}
+                          </div>
                         )}
                       </div>
-                      {(isLastMessageForSender || timestampMessageId === msg.id) && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          {formatTimestamp(msg.createdAt)}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    );
+                  })
+                )}
+              </div>
 
-            {/* Message Input */}
-            <div className="p-4 bg-white border-t flex items-center space-x-3">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
-                className="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                onKeyDown={handleKeySendMessage}
-                />
-              <button
-                onClick={handleSendMessage}
-                disabled={sending}
-                className="
-                px-5 py-3 bg-blue-600 text-white rounded-xl 
-                hover:bg-blue-700 transition-colors 
-                flex items-center space-x-2
-                disabled:bg-gray-400"
-                >
-                <FaPaperPlane />
-                <span>{sending ? "Sending..." : "Send"}</span>
-              </button>
+              {/* Message Input - fixed at bottom */}
+              <div className="p-4 bg-white border-t flex items-center space-x-3">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type a message..."
+                  className="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  onKeyDown={handleKeySendMessage}
+                  />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={sending}
+                  className="
+                  px-5 py-3 bg-blue-600 text-white rounded-xl 
+                  hover:bg-blue-700 transition-colors 
+                  flex items-center space-x-2
+                  disabled:bg-gray-400"
+                  >
+                  <FaPaperPlane />
+                  <span>{sending ? "Sending..." : "Send"}</span>
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50">
+              <div className="text-center">
+                <FaComment className="mx-auto text-6xl text-blue-300 mb-4" />
+                <p className="text-xl">Select a conversation to start chatting</p>
+              </div>
             </div>
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50">
-            <div className="text-center">
-              <FaComment className="mx-auto text-6xl text-blue-300 mb-4" />
-              <p className="text-xl">Select a conversation to start chatting</p>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
-        </div>
   );
 };
 

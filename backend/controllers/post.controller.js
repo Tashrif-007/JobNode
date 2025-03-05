@@ -150,6 +150,7 @@ export const searchPosts = async (req, res) => {
   }
 };
 
+
 export const getPostById = async (req, res) => {
   try {
     const { id } = req.params;

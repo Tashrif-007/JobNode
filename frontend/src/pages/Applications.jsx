@@ -98,7 +98,7 @@ const JobApplications = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 py-10 px-4 sm:px-10">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
       
       <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-16">
