@@ -19,15 +19,37 @@ const ApplicationCard = ({ app, onStatusChange }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
-
+  
       if (res.ok) {
         setStatus(newStatus);
         onStatusChange(app.applicationId, newStatus); // Notify parent
+  
+        // If status is updated to "Accepted", send the offer letter
+        if (newStatus === "Accepted") {
+          const offerRes = await fetch(`http://localhost:3500/offer/sendOffer`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jobSeekerId: app.userId,
+              companyId: user.userId,
+              status: "Pending",
+              applicationId: app.applicationId,
+            }),
+          });
+  
+          const offerData = await offerRes.json();
+          if (!offerRes.ok) {
+            console.error("Failed to send offer letter:", offerData.message);
+          } else {
+            console.log("Offer letter sent successfully", offerData);
+          }
+        }
       }
     } catch (error) {
       console.error("Failed to update status", error);
     }
   };
+  
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all">
