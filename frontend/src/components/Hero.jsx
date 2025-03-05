@@ -13,7 +13,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="container mx-auto py-12 flex flex-col md:flex-row items-center justify-between mt-[64px]">
+    <section className="container mx-auto py-12 flex flex-col md:flex-row items-center justify-between">
       <motion.div
         className="md:w-1/2"
         variants={slideInLeft}

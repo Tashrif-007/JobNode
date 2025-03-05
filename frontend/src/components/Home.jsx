@@ -21,9 +21,11 @@ const Home = () => {
   return (
     <div className="bg-gray-100 text-gray-800">
       <Navbar toggleDrawer={toggleDrawer} />
+      <div style={{paddingTop: '80px'}}>
       <Hero />
       <About />
       <Services />
+      </div>
       <Footer />
     </div>
   );

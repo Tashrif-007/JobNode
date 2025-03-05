@@ -66,6 +66,8 @@ const Posts = () => {
   return (
     <div className="min-w-full min-h-screen bg-gray-50">
       <Navbar />
+      <div style={{paddingTop: '80px'}}>
+
       <div className="container mx-auto px-4 py-8">
         <header className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-semibold text-primary">Job Posts</h1>
@@ -87,35 +89,35 @@ const Posts = () => {
             onChange={(e) => setSearch(e.target.value)}
             className="border p-3 rounded-lg w-full"
             onKeyDown={handleKeyDown}
-          />
+            />
           <input
             type="text"
             placeholder="Salary (e.g. 100-200)"
             value={salary}
             onChange={(e) => setSalary(e.target.value)}
             className="border p-3 rounded-lg w-full"
-          />
+            />
           <input
             type="number"
             placeholder="Experience (years)"
             value={experience}
             onChange={(e) => setExperience(e.target.value)}
             className="border p-3 rounded-lg w-full"
-          />
+            />
           <input
             type="text"
             placeholder="Location"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className="border p-3 rounded-lg w-full"
-          />
+            />
           <input
             type="text"
             placeholder="Skills (comma separated)"
             value={skills}
             onChange={(e) => setSkills(e.target.value)}
             className="border p-3 rounded-lg w-full"
-          />
+            />
           <button
             onClick={fetchPosts}
             className="bg-primary text-white rounded-lg py-3 px-6 shadow-md hover:bg-primary-600"
@@ -137,19 +139,19 @@ const Posts = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
               {posts.map((post) => (
                 <PostCard
-                  key={post.id}
-                  title={post.name}
+                key={post.id}
+                title={post.name}
                   location={post.location}
                   description={post.description || "No description available."}
                   salaryRange={`${post.salary}`}
                   experience={`${post.experience} years`}
                   skills={
                     post.requiredSkills.length > 0
-                      ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
-                      : "No skills listed"
+                    ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
+                    : "No skills listed"
                   }
                   jobPostId={post.id}
-                />
+                  />
               ))}
             </div>
           ) : (
@@ -165,13 +167,14 @@ const Posts = () => {
                   fetchAllPosts();
                 }}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
+                >
                 View All Jobs
               </button>
             </div>
           )}
         </section>
       </div>
+        </div>
     </div>
   );
 };

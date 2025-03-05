@@ -34,13 +34,13 @@ const Navbar = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1, ease: 'easeInOut' }}
-    >
+    // <motion.div
+    //   // initial={{ opacity: 0 }}
+    //   // animate={{ opacity: 1 }}
+    //   // transition={{ duration: 1, ease: 'easeInOut' }}
+    // >
       <AppBar 
-        position="fixed" 
+        position="sticky" 
         color="transparent" 
         elevation={0}
         sx={{ 
@@ -208,7 +208,7 @@ const Navbar = () => {
           </Box>
         </Toolbar>
       </AppBar>
-    </motion.div>
+    // </motion.div>
   );
 };
 
