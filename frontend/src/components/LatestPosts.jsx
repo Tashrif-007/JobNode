@@ -72,7 +72,7 @@ const LatestJobPosts = () => {
                 title={job.title}
                 location={job.location}
                 description={job.description}
-                salaryRange={job.salaryRange}
+                salaryRange={job.salary}
                 experience={job.experience}
                 skills={job.requiredSkills.map((skill) => skill.skill.name).join(', ')}
                 jobPostId={job.id}
