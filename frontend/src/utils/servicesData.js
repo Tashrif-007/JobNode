@@ -23,6 +23,18 @@ export const servicesData = [
       icon: "⭐",
       link: "/recommend",
     },
+    {
+      title: "Offers",
+      description: "Discover special deals tailored just for you. Don't miss out!",
+      icon: "📜",
+      link: "/offer"
+    },
+    {
+      title: "Profile",
+      description: "Manage your account details and preferences with ease.",
+      icon: "💁",
+      link: "/profile"
+    },
     
   ];
   
