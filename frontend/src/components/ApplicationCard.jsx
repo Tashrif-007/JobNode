@@ -112,31 +112,6 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           <span className="text-sm">{app.jobPost.location}</span>
         </div>
 
-        {/* Additional Info
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-emerald-50 rounded-lg p-3 flex items-center">
-            <Briefcase className="mr-2 text-emerald-500" />
-            <div>
-              <span className="block text-xs text-emerald-800">EXPERIENCE</span>
-              <span className="text-sm font-semibold text-emerald-900">3 years</span>
-            </div>
-          </div>
-          <div className="bg-sky-50 rounded-lg p-3 flex items-center">
-            <Clock className="mr-2 text-sky-500" />
-            <div>
-              <span className="block text-xs text-sky-800">SALARY</span>
-              <span className="text-sm font-semibold text-sky-900">$1233</span>
-            </div>
-          </div>
-          <div className="bg-amber-50 rounded-lg p-3 flex items-center">
-            <MessageCircle className="mr-2 text-amber-500" />
-            <div>
-              <span className="block text-xs text-amber-800">SKILLS</span>
-              <span className="text-sm font-semibold text-amber-900">reactjs, fastapi</span>
-            </div>
-          </div>
-        </div> */}
-
         {/* Action Buttons */}
         <div className={`flex ${user.userType === 'JobSeeker' ? "justify-center" : "justify-between"} space-x-2`}>
           <a 
