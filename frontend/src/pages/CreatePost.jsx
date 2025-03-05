@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { 
@@ -9,9 +9,45 @@ import {
   MapPin, 
   Building,
   Code,
-  FileText
+  Check,
+  X
 } from 'lucide-react';
 
+// Success Modal Component
+const SuccessModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-t-2xl -mx-6 -mt-6 mb-4">
+          <h2 className="text-2xl font-bold tracking-wide flex items-center gap-2">
+            <Check className="w-7 h-7" /> Post Created Successfully
+          </h2>
+        </div>
+        <p className="text-gray-700 mb-6 text-center">
+          Your job post has been created and is now live. Would you like to view your posts?
+        </p>
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={onConfirm}
+            className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full py-2 px-6 hover:from-indigo-600 hover:to-purple-700 transition-all duration-300"
+          >
+            View Posts
+          </button>
+          <button
+            onClick={onClose}
+            className="bg-gray-200 text-gray-700 rounded-full py-2 px-6 hover:bg-gray-300 transition-all duration-300"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main CreatePost Component
 const CreatePost = () => {
   const [formData, setFormData] = useState({
     position: "",
@@ -25,6 +61,7 @@ const CreatePost = () => {
 
   const [skillInput, setSkillInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -76,8 +113,7 @@ const CreatePost = () => {
       });
 
       if (response.ok) {
-        alert("Post created successfully!");
-        navigate("/posts");
+        setShowModal(true);
       } else {
         alert("Error creating post!");
       }
@@ -88,9 +124,23 @@ const CreatePost = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleViewPosts = () => {
+    navigate("/posts");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
+      
+      <SuccessModal 
+        isOpen={showModal} 
+        onClose={handleCloseModal} 
+        onConfirm={handleViewPosts} 
+      />
       
       <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-16 mb-16">
         {/* Header */}
@@ -180,21 +230,6 @@ const CreatePost = () => {
                 required
               />
             </div>
-            
-            {/* Description */}
-            {/* <div className="relative">
-              <div className="absolute top-3 left-3">
-                <FileText className="w-5 h-5 text-gray-400" />
-              </div>
-              <textarea
-                name="description"
-                placeholder="Job Description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-                rows="4"
-              />
-            </div> */}
             
             {/* Skills */}
             <div className="space-y-3">
