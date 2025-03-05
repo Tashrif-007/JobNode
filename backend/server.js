@@ -9,7 +9,7 @@ import messageRouter from './routes/message.routes.js';
 import conversationRouter from './routes/conversation.routes.js';
 import {app,server} from "./socket/socket.js";
 import offerRouter from './routes/offers.routes.js';
-import userRouter from './routes/user.routes.js';
+// import userRouter from './routes/user.routes.js';
 // const app = express();
 
 const PORT = process.env.PORT || 3500;
@@ -26,7 +26,7 @@ app.use("/rec",recRouter);
 app.use("/message", messageRouter);
 app.use("/conversation", conversationRouter);
 app.use("/offer", offerRouter);
-app.use("/user", userRouter);
+// app.use("/user", userRouter);
 
 app.get("*", (req,res) => {
     res.send("JobNode App!");
