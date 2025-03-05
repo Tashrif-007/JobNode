@@ -27,12 +27,21 @@ const Services = () => {
         Services
       </motion.h2>
 
+      {/* Stunning HR line with animation on view */}
+      <motion.hr
+        initial={{ width: "0%" }}
+        whileInView={{ width: "19%" }} // Set the final width when in view
+        transition={{ duration: 1, ease: "easeInOut" }}
+        className="border-t-2 border-purple-600 mx-auto mb-8"
+        viewport={{ once: true }} // Animation triggers only once when in view
+      />
+      
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4"
         variants={containerVariants}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        whileInView="visible"  // Animation will trigger when the container comes into the viewport
+        viewport={{ once: false, amount: 0.2 }} // Start the animation when 20% of the container is in view
       >
         {servicesData.map((service, index) => (
           <motion.div
@@ -58,4 +67,3 @@ const Services = () => {
 };
 
 export default Services;
- 
