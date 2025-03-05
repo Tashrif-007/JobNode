@@ -1,6 +1,17 @@
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { 
+  Download, 
+  MessageCircle, 
+  CheckCircle, 
+  Clock, 
+  XCircle, 
+  Calendar,
+  MapPin,
+  User,
+  Briefcase
+} from 'lucide-react';
 
 const ApplicationCard = ({ app, onStatusChange }) => {
   const navigate = useNavigate();
@@ -19,12 +30,9 @@ const ApplicationCard = ({ app, onStatusChange }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
-  
       if (res.ok) {
         setStatus(newStatus);
-        onStatusChange(app.applicationId, newStatus); // Notify parent
-  
-        // If status is updated to "Accepted", send the offer letter
+        onStatusChange(app.applicationId, newStatus);
         if (newStatus === "Accepted") {
           const offerRes = await fetch(`http://localhost:3500/offer/sendOffer`, {
             method: "POST",
@@ -36,7 +44,6 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               applicationId: app.applicationId,
             }),
           });
-  
           const offerData = await offerRes.json();
           if (!offerRes.ok) {
             console.error("Failed to send offer letter:", offerData.message);
@@ -49,46 +56,120 @@ const ApplicationCard = ({ app, onStatusChange }) => {
       console.error("Failed to update status", error);
     }
   };
-  
+
+  const getStatusStyle = (currentStatus) => {
+    const statusStyles = {
+      'Pending': {
+        icon: <Clock className="inline-block mr-2 text-sky-500" />,
+        bgColor: 'bg-sky-50',
+        textColor: 'text-sky-800'
+      },
+      'Accepted': {
+        icon: <CheckCircle className="inline-block mr-2 text-emerald-500" />,
+        bgColor: 'bg-emerald-50',
+        textColor: 'text-emerald-800'
+      },
+      'Interview': {
+        icon: <Calendar className="inline-block mr-2 text-amber-500" />,
+        bgColor: 'bg-amber-50',
+        textColor: 'text-amber-800'
+      },
+      'Rejected': {
+        icon: <XCircle className="inline-block mr-2 text-rose-500" />,
+        bgColor: 'bg-rose-50',
+        textColor: 'text-rose-800'
+      }
+    };
+    return statusStyles[currentStatus];
+  };
+
+  const statusStyle = getStatusStyle(status);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all">
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-700 text-white p-4">
-        <h4 className="text-xl font-bold mb-2">{app.userName}</h4>
-        <div className="text-sm">{app.jobPost.name}</div>
-      </div>
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm text-gray-600">{app.jobPost.location}</span>
-          <span className={`px-3 py-1 text-white rounded-full text-xs ${
-            status === 'Pending' ? 'bg-blue-500' :
-            status === 'Accepted' ? 'bg-green-500' :
-            status === 'Interview' ? 'bg-orange-500' : 'bg-red-500'
-          }`}>
+    <div className="bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-indigo-100 to-purple-100 p-5 border-b border-gray-100">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <User className="mr-3 text-indigo-500" size={24} />
+            <div>
+              <h4 className="text-xl font-semibold text-gray-800 tracking-wide">{app.userName}</h4>
+              <p className="text-sm text-gray-600">{app.jobPost.name}</p>
+            </div>
+          </div>
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle.bgColor} ${statusStyle.textColor}`}>
+            {statusStyle.icon}
             {status}
           </span>
         </div>
-        <div className={`flex ${user.userType === 'JobSeeker' ? "justify-center" : "justify-between"} mt-4`}>
-          <a href={`http://localhost:3500/apply/download/${cvPath}`} download className='rounded-lg px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-700 text-white'>View CV</a>
-          
-          {user.userType === 'Company' && (
-            <select className='px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-700 text-white ml-2' value={status} onChange={(e) => handleStatusChange(e.target.value)}>
-              <option value="Pending">Pending</option>
-              <option value="Accepted">Accepted</option>
-              <option value="Interview">Interview</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-          )}
+      </div>
 
-          {/* Chat button */}
-          {user.userType==='Company' &&
-          <button
-            onClick={() => handleChat(app.userId)}
-            className="rounded-lg px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-700 text-white ml-2"
+      {/* Body */}
+      <div className="p-5">
+        {/* Location */}
+        <div className="flex items-center mb-4 text-gray-600">
+          <MapPin className="mr-2 text-violet-500" size={20} />
+          <span className="text-sm">{app.jobPost.location}</span>
+        </div>
+
+        {/* Additional Info
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="bg-emerald-50 rounded-lg p-3 flex items-center">
+            <Briefcase className="mr-2 text-emerald-500" />
+            <div>
+              <span className="block text-xs text-emerald-800">EXPERIENCE</span>
+              <span className="text-sm font-semibold text-emerald-900">3 years</span>
+            </div>
+          </div>
+          <div className="bg-sky-50 rounded-lg p-3 flex items-center">
+            <Clock className="mr-2 text-sky-500" />
+            <div>
+              <span className="block text-xs text-sky-800">SALARY</span>
+              <span className="text-sm font-semibold text-sky-900">$1233</span>
+            </div>
+          </div>
+          <div className="bg-amber-50 rounded-lg p-3 flex items-center">
+            <MessageCircle className="mr-2 text-amber-500" />
+            <div>
+              <span className="block text-xs text-amber-800">SKILLS</span>
+              <span className="text-sm font-semibold text-amber-900">reactjs, fastapi</span>
+            </div>
+          </div>
+        </div> */}
+
+        {/* Action Buttons */}
+        <div className={`flex ${user.userType === 'JobSeeker' ? "justify-center" : "justify-between"} space-x-2`}>
+          <a 
+            href={`http://localhost:3500/apply/download/${cvPath}`} 
+            download 
+            className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
           >
-            Chat
-          </button>
-          }
+            <Download className="mr-2" />
+            View CV
+          </a>
+
+          {user.userType === 'Company' && (
+            <>
+              <select 
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300" 
+                value={status} 
+                onChange={(e) => handleStatusChange(e.target.value)}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Interview">Interview</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+
+              <button
+                onClick={() => handleChat(app.userId)}
+                className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+              >
+                <MessageCircle className="mr-2" />
+                Chat
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
