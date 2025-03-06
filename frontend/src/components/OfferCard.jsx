@@ -67,7 +67,7 @@ const OfferCard = ({ offer, newStatus }) => {
   const statusDetails = getStatusDetails(status);
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ">
       {/* Header */}
       <div className="bg-gradient-to-r from-violet-100 to-indigo-100 text-gray-800 p-6">
         <div className="flex justify-between items-start">

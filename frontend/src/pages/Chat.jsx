@@ -120,20 +120,20 @@ const Chat = () => {
   },[messages]);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-purple-100 to-purple-300">
       {/* Navbar at the top, fixed */}
       <div className="w-full">
         <Navbar />
       </div>
       
       {/* Main content area - takes remaining height with flex-1 */}
-      <div className="flex flex-1 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+      <div className="flex flex-1 bg-white overflow-hidden">
         
         {/* Sidebar: Conversation List - fixed height with overflow-y-auto */}
-        <div className="w-1/4 bg-white shadow-xl border-r border-gray-200 flex flex-col">
+        <div className="w-1/4 bg-white shadow-xl border-r border-gray-200 flex flex-col ">
           <div className="p-4 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-              <FaComment className="mr-3 text-blue-600" />
+            <h2 className="text-2xl font-bold text-purple-600 flex items-center">
+              <FaComment className="mr-3 text-purple-500" />
               Conversations
             </h2>
           </div>
@@ -152,10 +152,10 @@ const Chat = () => {
                     >
                     <div
                       className={`
-                        p-3 rounded-lg cursor-pointer transition-all duration-200 
+                        p-3 rounded-lg cursor-pointer transition-all duration-200 bg-gradient-to-r from-indigo-500 to-purple-600 text-white
                         ${selectedConversation?.id === conv.id 
-                          ? "bg-blue-600 text-white shadow-md" 
-                          : "bg-gray-100 hover:bg-blue-100 hover:shadow-sm"}
+                          ? "bg-purple-600 text-white shadow-lg" 
+                          : "bg-gray-100 hover:bg-purple-100 hover:shadow-md"}
                           `}
                           onClick={() => setSelectedConversation(conv)}
                           >
@@ -197,11 +197,11 @@ const Chat = () => {
         </div>
 
         {/* Chat Window - fixed layout with internal scrolling */}
-        <div className="w-3/4 flex flex-col bg-white shadow-lg rounded-tl-2xl overflow-hidden">
+        <div className="w-3/4 flex flex-col  shadow-lg rounded-tl-2xl overflow-hidden">
           {selectedConversation ? (
             <>
               {/* Chat Header - fixed */}
-              <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center mr-3">
                     {selectedConversation.name[0].toUpperCase()}
@@ -211,7 +211,7 @@ const Chat = () => {
               </div>
 
               {/* Messages Container - scrollable */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-2 bg-gray-50">
+              <div className="flex-1 p-4 overflow-y-auto space-y-2 ">
                 {messagesLoading ? (
                   <div className="text-center text-gray-500">Loading messages...</div>
                 ) : (
@@ -271,7 +271,7 @@ const Chat = () => {
                               p-2 rounded-xl relative
                               max-w-md w-fit break-words cursor-pointer
                               ${msg.senderId === user.userId
-                                ? "bg-blue-500 text-white" 
+                                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white" 
                                 : "bg-gray-200 text-gray-800"}
                             `}
                             onClick={() => setTimestampMessageId(
@@ -302,15 +302,15 @@ const Chat = () => {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type a message..."
-                  className="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className="flex-1 p-3 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                   onKeyDown={handleKeySendMessage}
                   />
                 <button
                   onClick={handleSendMessage}
                   disabled={sending}
                   className="
-                  px-5 py-3 bg-blue-600 text-white rounded-xl 
-                  hover:bg-blue-700 transition-colors 
+                  px-5 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl 
+                  hover:bg-purple-700 transition-colors 
                   flex items-center space-x-2
                   disabled:bg-gray-400"
                   >
@@ -320,9 +320,9 @@ const Chat = () => {
               </div>
             </>
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-500 bg-gray-50">
+            <div className="flex items-center justify-center h-full text-gray-500 bg-purple-50">
               <div className="text-center">
-                <FaComment className="mx-auto text-6xl text-blue-300 mb-4" />
+                <FaComment className="mx-auto text-6xl text-purple-300 mb-4" />
                 <p className="text-xl">Select a conversation to start chatting</p>
               </div>
             </div>
