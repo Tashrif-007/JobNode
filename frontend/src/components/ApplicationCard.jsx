@@ -25,7 +25,49 @@ const ApplicationCard = ({ app, onStatusChange }) => {
   const cvPath = app.cvPath.split("/").pop();
 
   const handleChat = async (receiverId) => {
+
+    try {
+
+      const senderId = user.userId;
+
+      const res = await fetch("http://localhost:3500/conversation/createConversation", {
+
+        method: "POST",
+
+        body: JSON.stringify({ senderId, receiverId }),
+
+        headers: { "Content-Type": "application/json" }
+
+      });
+
+      if (!res.ok) {
+
+        throw new Error(`HTTP error! status: ${res.status}`);
+
+      }
+
+
+
+      const res2 = await fetch(`http://localhost:3500/conversation/getCOnversations/${senderId}`);
+
+      const data = await res2.json();
+
+      const selectedConv = data.users.find((conv)=> conv.id===receiverId);
+
+      setSelectedConversation(selectedConv);
+
+
+
+    } catch (error) {
+
+      console.error(error.message);
+
+    }
+
+
+
     navigate('/chats');
+
   };
 
   const handleStatusChange = async (newStatus) => {

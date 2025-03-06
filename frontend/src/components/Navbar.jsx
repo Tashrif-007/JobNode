@@ -49,7 +49,7 @@ const Navbar = () => {
       color="transparent" 
       elevation={0}
       sx={{ 
-        backgroundColor: 'white', 
+        backgroundColor: '#f8f9ff', 
         borderBottom: '1px solid #e0e0e0',
         top: 0,
         left: 0,
@@ -66,22 +66,44 @@ const Navbar = () => {
         width: '100%' 
       }}>
         {/* Logo and Name */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img 
-            src="./logo.png" 
-            alt="Logo" 
-            style={{ 
-              width: 40, 
-              height: 40, 
-              marginRight: 10,
-              cursor: 'pointer' 
-            }} 
-            onClick={()=>navigate("/")}
-          />
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            '&:hover': {
+              transform: 'scale(1.02)',
+              transition: 'transform 0.3s ease'
+            }
+          }}
+        >
+          <motion.div
+            whileHover={{ rotate: 10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <img 
+              src="./logo.png" 
+              alt="Logo" 
+              style={{ 
+                width: 40, 
+                height: 40, 
+                marginRight: 10,
+                cursor: 'pointer',
+                filter: 'drop-shadow(0px 2px 4px rgba(126, 34, 206, 0.3))' 
+              }} 
+              onClick={()=>navigate("/")}
+            />
+          </motion.div>
           <Typography 
-            variant="h6" 
+            variant="h5" 
             component="div" 
-            sx={{ fontWeight: 'bold' }}
+            sx={{ 
+              fontWeight: 'bold',
+              background: 'linear-gradient(90deg, #9c6bfa 0%, #7d5cf4 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '0.5px'
+            }}
             onClick={()=> navigate("/")}
             style={{
               cursor: 'pointer',
@@ -97,7 +119,20 @@ const Navbar = () => {
             color="inherit" 
             component={Link} 
             to="/posts"
-            sx={{ textTransform: 'none', fontWeight: 'medium' }}
+            sx={{ 
+              textTransform: 'none', 
+              fontWeight: 500,
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: '#555',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(156, 107, 250, 0.08)',
+                color: '#7d5cf4',
+                transform: 'translateY(-2px)',
+                transition: 'all 0.3s ease'
+              }
+            }}
           >
             Posts
           </Button>
@@ -105,7 +140,20 @@ const Navbar = () => {
             color="inherit" 
             component={Link} 
             to="/applications"
-            sx={{ textTransform: 'none', fontWeight: 'medium' }}
+            sx={{ 
+              textTransform: 'none', 
+              fontWeight: 500,
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: '#555',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(156, 107, 250, 0.08)',
+                color: '#7d5cf4',
+                transform: 'translateY(-2px)',
+                transition: 'all 0.3s ease'
+              }
+            }}
           >
             Applications
           </Button>
@@ -113,7 +161,20 @@ const Navbar = () => {
             color="inherit" 
             component={Link} 
             to="/chats"
-            sx={{ textTransform: 'none', fontWeight: 'medium' }}
+            sx={{ 
+              textTransform: 'none', 
+              fontWeight: 500,
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: '#555',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(156, 107, 250, 0.08)',
+                color: '#7d5cf4',
+                transform: 'translateY(-2px)',
+                transition: 'all 0.3s ease'
+              }
+            }}
           >
             Chats
           </Button>
@@ -121,7 +182,20 @@ const Navbar = () => {
             color="inherit" 
             component={Link} 
             to="/recommendations"
-            sx={{ textTransform: 'none', fontWeight: 'medium' }}
+            sx={{ 
+              textTransform: 'none', 
+              fontWeight: 500,
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: '#555',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(156, 107, 250, 0.08)',
+                color: '#7d5cf4',
+                transform: 'translateY(-2px)',
+                transition: 'all 0.3s ease'
+              }
+            }}
           >
             Recommendations
           </Button>
@@ -130,7 +204,20 @@ const Navbar = () => {
             color="inherit" 
             component={Link} 
             to="/offer"
-            sx={{ textTransform: 'none', fontWeight: 'medium' }}
+            sx={{ 
+              textTransform: 'none', 
+              fontWeight: 500,
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: '#555',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(156, 107, 250, 0.08)',
+                color: '#7d5cf4',
+                transform: 'translateY(-2px)',
+                transition: 'all 0.3s ease'
+              }
+            }}
           >
             Offers
           </Button>
@@ -139,29 +226,36 @@ const Navbar = () => {
           {/* User Profile or Login */}
           {user ? (
             <>
-              <IconButton 
-                onClick={handleMenuOpen}
-                sx={{ 
-                  backgroundColor: 'rgba(126,34,206,0.1)', 
-                  color: 'rgb(97 27 248 / 1)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: 'rgba(126,34,206,0.2)',
-                    transform: 'scale(1.05)'
-                  }
-                }}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Avatar 
+                <IconButton 
+                  onClick={handleMenuOpen}
                   sx={{ 
-                    width: 32, 
-                    height: 32, 
-                    backgroundColor: 'rgb(97 27 248 / 1)',
-                    boxShadow: '0 0 0 2px white'
+                    backgroundColor: 'rgba(156, 107, 250, 0.15)', 
+                    color: '#7d5cf4',
+                    transition: 'all 0.3s ease',
+                    padding: '8px',
+                    '&:hover': {
+                      backgroundColor: 'rgba(156, 107, 250, 0.25)',
+                      boxShadow: '0 4px 8px rgba(156, 107, 250, 0.2)'
+                    }
                   }}
                 >
-                  {getInitials()}
-                </Avatar>
-              </IconButton>
+                  <Avatar 
+                    sx={{ 
+                      width: 32, 
+                      height: 32, 
+                      backgroundColor: 'rgba(156, 107, 250, 0.9)',
+                      boxShadow: '0 0 0 2px white',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {getInitials()}
+                  </Avatar>
+                </IconButton>
+              </motion.div>
 
               <Menu
                 anchorEl={anchorEl}
@@ -179,10 +273,11 @@ const Navbar = () => {
                   elevation: 3,
                   sx: {
                     overflow: 'visible',
-                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
+                    filter: 'drop-shadow(0px 2px 8px rgba(156, 107, 250, 0.2))',
                     mt: 1.5,
                     width: 230,
-                    borderRadius: '10px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(156, 107, 250, 0.1)',
                     '&:before': {
                       content: '""',
                       display: 'block',
@@ -194,11 +289,13 @@ const Navbar = () => {
                       bgcolor: 'background.paper',
                       transform: 'translateY(-50%) rotate(45deg)',
                       zIndex: 0,
+                      borderTop: '1px solid rgba(156, 107, 250, 0.1)',
+                      borderLeft: '1px solid rgba(156, 107, 250, 0.1)',
                     },
                   },
                 }}
               >
-                <Box sx={{ p: 2, pb: 1, pt: 1.5 }}>
+                <Box sx={{ p: 2, pb: 1, pt: 1.5, backgroundColor: 'rgba(156, 107, 250, 0.05)' }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#1a1a1a' }}>
                     {user?.name || 'User'}
                   </Typography>
@@ -216,13 +313,15 @@ const Navbar = () => {
                   }}
                   sx={{ 
                     py: 1.5,
+                    mx: 1,
+                    borderRadius: '8px',
                     '&:hover': {
-                      backgroundColor: 'rgba(126,34,206,0.1)'
+                      backgroundColor: 'rgba(156, 107, 250, 0.08)'
                     }
                   }}
                 >
                   <ListItemIcon>
-                    <PersonIcon fontSize="small" style={{ color: 'rgb(97 27 248 / 1)' }} />
+                    <PersonIcon fontSize="small" style={{ color: '#7d5cf4' }} />
                   </ListItemIcon>
                   <ListItemText primary="Profile" />
                 </MenuItem>
@@ -236,8 +335,10 @@ const Navbar = () => {
                   }}
                   sx={{ 
                     py: 1.5,
+                    mx: 1,
+                    borderRadius: '8px',
                     '&:hover': {
-                      backgroundColor: 'rgba(211,47,47,0.1)'
+                      backgroundColor: 'rgba(211, 47, 47, 0.08)'
                     }
                   }}
                 >
@@ -249,19 +350,30 @@ const Navbar = () => {
               </Menu>
             </>
           ) : (
-            <Button 
-              color="primary" 
-              variant="contained"
-              component={Link} 
-              to="/login"
-              sx={{ 
-                textTransform: 'none',
-                backgroundColor: '#7E22CE', 
-                '&:hover': { backgroundColor: '#6A1B9A' }
-              }}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Login
-            </Button>
+              <Button 
+                variant="contained"
+                component={Link} 
+                to="/login"
+                sx={{ 
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  backgroundColor: '#9c6bfa', 
+                  borderRadius: '10px',
+                  padding: '8px 20px',
+                  boxShadow: '0 4px 10px rgba(156, 107, 250, 0.3)',
+                  '&:hover': { 
+                    backgroundColor: '#7d5cf4',
+                    boxShadow: '0 6px 12px rgba(156, 107, 250, 0.4)'
+                  }
+                }}
+              >
+                Login
+              </Button>
+            </motion.div>
           )}
         </Box>
       </Toolbar>
