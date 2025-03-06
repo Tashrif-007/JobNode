@@ -1,13 +1,14 @@
-const { PrismaClient } = require('@prisma/client');
-const fs = require('fs');
-const csv = require('csv-parser');
+import { PrismaClient } from "@prisma/client";
+import fs from 'fs';
+import csv from 'csv-parser';
 
 const prisma = new PrismaClient();
 
+const getRandomUserId = () => Math.floor(Math.random() * (38 - 33 + 1)) + 33;
 async function insertJobPosts() {
     const jobPosts = [];
     
-    fs.createReadStream('job_posts.csv')  // Path to your CSV file
+    fs.createReadStream('post.csv')  // Path to your CSV file
         .pipe(csv())
         .on('data', (row) => {
             jobPosts.push(row);
@@ -20,19 +21,19 @@ async function insertJobPosts() {
                 // Create JobPost record (without upsert)
                 const newJobPost = await prisma.jobPost.create({
                     data: {
-                        jobPostId: parseInt(job.JobId), // Job ID
-                        name: job.Name,                  // Job Name
-                        position: job.Position,          // Position
-                        salary: parseFloat(job['Salary Range']), // Salary
-                        experience: parseInt(job.Experience),    // Experience
+                        jobPostId: job['Job Id'], // Job ID
+                        name: job['Job Title'],                  // Job Name
+                        position: job['Job Title'],          // Position
+                        salary: parseFloat(job['min_salary']), // Salary
+                        experience: parseInt(job.experience),    // Experience
                         location: job.location,          // Location
                         deadline: deadline,              // Deadline (optional)
-                        userId: parseInt(job.UserId),    // Company/User ID
+                        userId: getRandomUserId(),    // Company/User ID
                     },
                 });
 
                 // Handle skills
-                const skillNames = job.Skills.split(',').map(s => s.trim());
+                const skillNames = job.skills.split(' ').map(s => s.trim());
                 for (const skillName of skillNames) {
                     // Upsert the skill into the Skills table
                     const skill = await prisma.skills.upsert({

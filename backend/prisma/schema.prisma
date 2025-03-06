@@ -62,8 +62,8 @@ model Skills {
 
 model JobPost {
   id          Int       @id @default(autoincrement())
-  jobPostId   Int?
-  name        String    @unique
+  jobPostId   String?
+  name        String   
   position    String  
   salary      Float
   experience  Int
@@ -82,7 +82,7 @@ model JobPostReqSkills {
   skillId   Int
   jobPost   JobPost @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
   skill     Skills  @relation(fields: [skillId], references: [id], onDelete: Cascade)
-  @@unique([jobPostId, skillId])
+  
 }
 
 model JobSeekerReqSkills {
