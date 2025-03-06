@@ -24,8 +24,9 @@ const LatestJobPosts = () => {
       try {
         const response = await fetch('http://localhost:3500/post/getAllPosts');
         const data = await response.json();
+        const latest = data.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
         if (response.ok) {
-          setLatestJobs(data);
+          setLatestJobs(latest);
         } else {
           console.error('Error fetching latest job posts:', data.error);
         }
