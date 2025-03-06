@@ -9,6 +9,7 @@ import {
   MapPin, 
   Building,
   Code,
+  Calendar,
   Check,
   X
 } from 'lucide-react';
@@ -56,6 +57,7 @@ const CreatePost = () => {
     location: "",
     name: "",
     description: "",
+    deadline: "",
     skills: [],
   });
 
@@ -102,7 +104,7 @@ const CreatePost = () => {
         alert("You need to be logged in to create a post!");
         return;
       }
-      
+      console.log(formData.deadline)
       const response = await fetch("http://localhost:3500/post/createPost", {
         method: "POST",
         headers: { 
@@ -159,7 +161,7 @@ const CreatePost = () => {
               <input
                 type="text"
                 name="name"
-                placeholder="Company Name *"
+                placeholder="Post Name *"
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
@@ -225,6 +227,21 @@ const CreatePost = () => {
                 name="location"
                 placeholder="Location *"
                 value={formData.location}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                required
+              />
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <Calendar className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="date"
+                name="deadline"
+                placeholder="Deadline *"
+                value={formData.deadline}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 required

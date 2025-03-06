@@ -12,7 +12,7 @@ import {
   Upload
 } from 'lucide-react';
 
-const PostCard = ({ title, location, description, salaryRange, experience, skills, jobPostId }) => {
+const PostCard = ({ title, location, description, salaryRange, experience, skills, jobPostId, deadline }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [cv, setCv] = useState(null);
@@ -56,6 +56,7 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
     formData.append("name", user.name);
     formData.append("userId", user.userId);
     formData.append("status", "Pending");
+    formData.append("deadline", deadline); // Include deadline in the formData
 
     try {
       setLoading(true);
@@ -146,6 +147,13 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
                 </span>
               )}
             </div>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <div className="flex items-center text-gray-500 mt-1">
+            <span className="text-xs font-semibold text-gray-700">Deadline: </span>
+            <span className="text-sm">{new Date(deadline).toLocaleDateString()}</span>
           </div>
         </div>
 
