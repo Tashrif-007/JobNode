@@ -81,7 +81,7 @@ const JobOffers = () => {
     <div className="bg-lavender-50 min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-10 mt-16">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl shadow-lg p-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-lavender-800 flex items-center gap-3">
