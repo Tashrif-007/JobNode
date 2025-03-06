@@ -33,6 +33,7 @@ model User {
 
 model JobSeeker {
   id               Int       @id @default(autoincrement())
+  jobSeekerId      Int?
   userId           Int       @unique
   salaryExpectation Float?
   location         String?
@@ -61,6 +62,7 @@ model Skills {
 
 model JobPost {
   id          Int       @id @default(autoincrement())
+  jobPostId   Int?
   name        String    @unique
   position    String  
   salary      Float

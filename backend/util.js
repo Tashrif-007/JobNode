@@ -1,14 +1,14 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcrypt');
-const fs = require('fs');
-const csv = require('csv-parser');
 
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import csv from 'csv-parser';
 const prisma = new PrismaClient();
 
 async function insertJobSeekers() {
     const users = [];
     
-    fs.createReadStream('job_seekers_with_location.csv')
+    fs.createReadStream('job_seekers copy.csv')
         .pipe(csv())
         .on('data', (row) => {
             users.push(row);
@@ -30,11 +30,12 @@ async function insertJobSeekers() {
                 // Insert into JobSeeker table
                 const jobSeeker = await prisma.jobSeeker.create({
                     data: {
-                        userId: user.jobseeker_id,
+                        userId: newUser.id,
                         salaryExpectation: parseFloat(user.expected_salary),
                         location: user.location,
                         experience: parseInt(user.experience),
                         experienceName: `${user.experience} years`,
+                        jobSeekerId: parseInt(user.jobseeker_id)
                     },
                 });
 
