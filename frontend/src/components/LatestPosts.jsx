@@ -77,6 +77,7 @@ const LatestJobPosts = () => {
                 experience={job.experience}
                 skills={job.requiredSkills.map((skill) => skill.skill.name).join(', ')}
                 jobPostId={job.id}
+                deadline={job.deadline}
               />
             </motion.div>
           ))
