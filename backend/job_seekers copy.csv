@@ -1,0 +1,31 @@
+jobseeker_id,experience,expected_salary,skills,location,name,email,password
+1,12,124699,"kubernetes, python, ml, react, java, aws",Sylhet,Tashrif,tashrifpro@gmail.com,1234567
+2,14,67484,"express.js, css, java, graphql",Sylhet, Misty, misty@gmail.com, 1234567
+3,11,69158,"sql, azure, tensorflow, java, flask, linux",Tejgaon, Sami, sami@gmail.com, 1234567
+4,7,103472,"data analysis, linux, express.js, html, pytorch",Mohakhali, Nandan, nandan@gmail.com, 1234567
+5,17,129938,"javascript, python, cloud, ml, typescript, django",Panthapath, Zisun, zisun@gmail.com, 1234567
+6,15,43125,"kubernetes, javascript, django, data analysis",Uttara, Ismail, ismail@gmail.com, 1234567
+7,3,44468,"data analysis, javascript, sql, tensorflow, css",Tejgaon, Ayon, ayon@gmail.com, 1234567
+8,17,34023,"pytorch, css, tensorflow",Gulshan, Nahian, nahian@gmail.com, 1234567
+9,7,98673,"javascript, flask, aws, sql, ml, tensorflow",Bashundhara, Saimon, saimon@gmail.com, 1234567
+10,12,99196,"linux, css, graphql, pytorch, java, c++, python",Bashundhara, Habib, habib@gmail.com, 1234567
+11,14,34031,"sql, fastapi, graphql, typescript, docker",Cantonment, Shaikh, shaikh@gmail.com, 1234567
+12,5,30189,"pytorch, node.js, graphql, html, flask, java",Gulshan, Chondon, chondon@gmail.com, 1234567
+13,12,136709,"ml, fastapi, kubernetes, flask, c++, linux, ai",Mohakhali, Abir, abir@gmail.com, 1234567
+14,16,68424,"data analysis, pytorch, flask",Sylhet, Hasin, hasin@gmail.com, 1234567
+15,10,101018,"fastapi, docker, linux, flask",Tangail, Kamrul, kamrul@gmail.com, 1234567
+16,7,56125,"flask, tensorflow, cloud, css, react, ai, aws",Bashundhara, Samdani, samdani@gmail.com, 1234567
+17,4,141952,"flask, graphql, typescript, kubernetes, c++, sql, docker",Gulshan, Kibria, kibria@gmail.com, 1234567
+18,15,135731,"express.js, sql, flask, ml, typescript, html",Sylhet, Munna, munna@gmail.com, 1234567
+19,8,31034,"ml, tensorflow, javascript, kubernetes",Uttara, Azad, azad@gmail.com, 1234567
+20,10,87455,"react, cloud, ai, python, html, c++, sql",Dhanmondi, Toha, toha@gmail.com, 1234567
+21,3,94655,"node.js, python, linux, ml, flask",Tangail, Muhaimeen, muhaimeen@gmail.com, 1234567
+22,19,68399,"react, c++, ml",Panthapath, Tausif, tausif@gmail.com, 1234567
+23,17,135000,"aws, ai, css, python, ml, flask",Tangail, Arafat, arafat@gmail.com, 1234567
+24,10,131609,"data analysis, java, linux, typescript, django, html",Bashundhara, Yasin, yasin@gmail.com, 1234567
+25,14,41176,"ai, tensorflow, html",Bashundhara, Mustakim, mustakim@gmail.com, 1234567
+26,17,86985,"html, graphql, express.js, flask",Panthapath, Naima, naima@gmail.com, 1234567
+27,8,49319,"node.js, graphql, cloud, react",Banani, Nusrat, nusrat@gmail.com, 1234567
+28,7,70614,"python, css, kubernetes",Banani, Elin, elin@gmail.com, 1234567
+29,15,33419,"django, graphql, html",Mirpur, Nahid, nahid@gmail.com, 1234567
+30,6,60290,"sql, react, aws, flask, kubernetes, ml, graphql",Agargaon, Sakib, sakib@gmail.com, 1234567
