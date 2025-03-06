@@ -1,47 +1,67 @@
-import { PrismaClient } from "@prisma/client";
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
+const fs = require('fs');
+const csv = require('csv-parser');
+
 const prisma = new PrismaClient();
 
-async function main() {
-  try {
-    // Input Data
-    const jobSeekerData = {
-      userId: 5, // Replace with your userId
-      salaryExpectation: 2800.0, // Optional
-      location: 'Gulshan', // Optional
-      experience: 5, // Optional
-      experienceName: 'Software Developer', // Optional
-      requiredSkills: [8,9,7], // Array of skill IDs
-    };
+async function insertJobSeekers() {
+    const users = [];
+    
+    fs.createReadStream('job_seekers_with_location.csv')
+        .pipe(csv())
+        .on('data', (row) => {
+            users.push(row);
+        })
+        .on('end', async () => {
+            for (const user of users) {
+                const hashedPassword = await bcrypt.hash(user.password, 10);
+                
+                // Insert into User table
+                const newUser = await prisma.user.create({
+                    data: {
+                        name: user.name,
+                        email: user.email,
+                        password: hashedPassword,
+                        userType: 'JobSeeker',
+                    },
+                });
 
-    // Insert JobSeeker
-    const jobSeeker = await prisma.jobSeeker.create({
-      data: {
-        userId: jobSeekerData.userId,
-        salaryExpectation: jobSeekerData.salaryExpectation,
-        location: jobSeekerData.location,
-        experience: jobSeekerData.experience,
-        experienceName: jobSeekerData.experienceName,
-      },
-    });
+                // Insert into JobSeeker table
+                const jobSeeker = await prisma.jobSeeker.create({
+                    data: {
+                        userId: user.jobseeker_id,
+                        salaryExpectation: parseFloat(user.expected_salary),
+                        location: user.location,
+                        experience: parseInt(user.experience),
+                        experienceName: `${user.experience} years`,
+                    },
+                });
 
-    console.log('JobSeeker Inserted:', jobSeeker);
+                // Handle skills
+                const skillNames = user.skills.split(',').map(s => s.trim());
+                for (const skillName of skillNames) {
+                    const skill = await prisma.skills.upsert({
+                        where: { name: skillName },
+                        update: {},
+                        create: { name: skillName },
+                    });
 
-    // Insert Required Skills
-    for (let skillId of jobSeekerData.requiredSkills) {
-      await prisma.jobSeekerReqSkills.create({
-        data: {
-          jobSeekerId: jobSeeker.id,
-          skillId: skillId,
-        },
-      });
-    }
-
-    console.log('JobSeeker Skills Inserted Successfully');
-  } catch (error) {
-    console.error('Error inserting JobSeeker:', error);
-  } finally {
-    await prisma.$disconnect();
-  }
+                    await prisma.jobSeekerReqSkills.create({
+                        data: {
+                            jobSeekerId: jobSeeker.id,
+                            skillId: skill.id,
+                        },
+                    });
+                }
+            }
+            console.log('Data insertion complete!');
+            await prisma.$disconnect();
+        });
 }
 
-main();
+insertJobSeekers().catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+});
