@@ -156,8 +156,9 @@ export const searchPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
   try {
     const { id } = req.params;
-    const jobPost = await prisma.jobPost.findUnique({
-      where: { id: parseInt(id) },
+    console.log(id)
+    const jobPost = await prisma.jobPost.findMany({
+      where: { userId: parseInt(id) },
       include: {
         requiredSkills: { include: { skill: true } },
         user: true,
