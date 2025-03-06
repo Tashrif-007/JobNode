@@ -66,9 +66,10 @@ model JobPost {
   salary      Float
   experience  Int
   location    String
+  deadline    DateTime? // Added as optional with the ? mark
   createdAt   DateTime  @default(now())
-  userId   Int       // Reference to the company that created the post
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Add relation to company
+  userId      Int       // Reference to the company that created the post
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Add relation to company
   requiredSkills JobPostReqSkills[]
   applications   Apply[]
 }

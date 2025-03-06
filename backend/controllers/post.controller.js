@@ -41,7 +41,7 @@ export const createPost = async (req, res) => {
       return res.status(403).json({ error: 'Permission denied' });
     }
 
-    const { name, position, salary, experience, location, skills } = req.body;
+    const { name, position, salary, experience, location, skills, deadline } = req.body;
     validateJobPostData({ name, position, salary, experience, location, skills });
 
     const skillRecords = await upsertSkills(skills);
@@ -54,6 +54,7 @@ export const createPost = async (req, res) => {
         experience: parseInt(experience),
         location,
         userId: decoded.userId,
+        deadline: deadline ? new Date(deadline) : null, // Handle deadline if provided
         requiredSkills: {
           create: skillRecords.map((skill) => ({ skillId: skill.id })),
         },
@@ -72,6 +73,7 @@ export const createPost = async (req, res) => {
     res.status(500).json({ error: error.message || 'Internal server error' });
   }
 };
+
 
 // Controller to get all posts (initial load)
 export const getAllPosts = async (req, res) => {

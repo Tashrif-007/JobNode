@@ -208,7 +208,9 @@ const Posts = () => {
                     post.requiredSkills.length > 0
                       ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
                       : "No skills listed"
+                    
                   }
+                  deadline={post.deadline}
                   jobPostId={post.id}
                 />
               ))}
