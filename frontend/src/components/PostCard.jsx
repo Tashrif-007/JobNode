@@ -96,7 +96,7 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
 
   return (
     <>
-      <div className="flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-white border-2 border-transparent hover:border-purple-500 rounded-lg p-6 shadow-lg">
+      <div className="flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-white border-2 border-indigo-500 hover:border-purple-500 rounded-lg p-6 shadow-lg">
         <div className="flex justify-between items-center mb-4">
           <div className="flex-grow">
             <h3 className="text-2xl font-bold text-gray-800 truncate">{title}</h3>
