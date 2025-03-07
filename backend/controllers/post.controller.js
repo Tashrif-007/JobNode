@@ -269,3 +269,33 @@ export const searchFilteredPosts = async (req, res) => {
     return res.status(500).json({ error: "An error occurred while fetching posts." });
   }
 };
+
+export const deleteJobPost = async (req, res) => {
+  try {
+    // Extract job post ID from request parameters
+    const { id } = req.params;
+
+    // Find the job post to verify ownership
+    const jobPost = await prisma.jobPost.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    // Check if job post exists
+    if (!jobPost) {
+      return res.status(404).json({ error: 'Job post not found' });
+    }
+
+
+    // Delete the job post
+    // Prisma will automatically handle cascading deletes for related entities
+    // (requiredSkills, applications) due to the onDelete: Cascade settings in schema
+    await prisma.jobPost.delete({
+      where: { id: parseInt(id) },
+    });
+
+    res.status(200).json({ message: 'Job post deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting job post:', error.message);
+    res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+};
