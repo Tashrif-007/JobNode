@@ -8,20 +8,31 @@ const JobSeekerProfile = () => {
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
-    salaryExpectation: "",
+    salaryExpectation: 0.0,
     location: "",
     experience: 0,
     skills: [],
     userType: ""
   });
   const {user} = useAuth();
+  const userId = user?.userId;
   console.log(profileData)
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfileData({
-      ...profileData,
-      [name]: value
-    });
+    if(name==='salaryExpectation') {
+      const float = parseFloat(value);
+      setProfileData({
+        ...profileData,
+        [name]: float
+      })
+    }
+    else {
+      setProfileData({
+        ...profileData,
+        [name]: value
+      });
+    }
+    
   };
 
   const handleSkillChange = (index, value) => {
@@ -65,7 +76,7 @@ const JobSeekerProfile = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setProfileData(data); // Update the local user data after successful update
+        console.log(data)
         setIsEditing(false); // Switch back to view mode
         console.log("User updated successfully");
       } else {
@@ -239,12 +250,14 @@ const JobSeekerProfile = () => {
                 </div>
                 {isEditing ? (
                   <input
-                    type="text"
+                    type="number"
                     name="salaryExpectation"
                     value={profileData.salaryExpectation}
                     onChange={handleInputChange}
                     className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
                     placeholder="Salary Expectation"
+                    step="0.01"  // Ensures float values with two decimal places
+  min="0"
                   />
                 ) : (
                   <div className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-500 text-white px-4 py-2 rounded-full font-medium text-sm mt-2 ml-6">
@@ -322,7 +335,7 @@ const JobSeekerProfile = () => {
             </div>
             
             {/* Description Card */}
-            <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
+            {/* <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
               <div className="mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
@@ -350,11 +363,11 @@ const JobSeekerProfile = () => {
                 ) : (
                   <div className="text-slate-700">{profileData.description}</div>
                 )}
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
             
             {/* Experience Card */}
-            <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
+            {/* <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
               <div className="mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
@@ -379,7 +392,7 @@ const JobSeekerProfile = () => {
                       min="0"
                     />
                   ) : (
-                    profileData.yearsExperience
+                    profileData.experience
                   )}
                 </div>
                 <div className="flex-1">
@@ -387,7 +400,7 @@ const JobSeekerProfile = () => {
                   <div className="text-sm text-slate-500">Working as a Senior Developer with expertise in full-stack development and leading technical teams on various projects.</div>
                 </div>
               </div>
-            </div>
+            </div> */}
             
             {/* Skills Card */}
             <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">

@@ -9,14 +9,13 @@ const CompanyProfile = () => {
     name: "",
     email: "",
     website: "",
-    location: "",
     techStack: [],
     description: "",
     userType: ""
   });
   
   const { user } = useAuth();
-  
+  const userId = user?.userId;
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfileData({
@@ -56,18 +55,20 @@ const CompanyProfile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const userId = user?.userId;
+      const formattedData = {
+        ...profileData,
+        techStack: profileData.techStack.join(", ") // Convert array to comma-separated string
+      };
       const response = await fetch(`http://localhost:3500/user/updateCompany/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(profileData),
+        body: JSON.stringify(formattedData),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setProfileData(data); // Update the local user data after successful update
         setIsEditing(false); // Switch back to view mode
         console.log("Company profile updated successfully");
       } else {
@@ -241,7 +242,7 @@ const CompanyProfile = () => {
                 )}
               </div>
               
-              <div className="flex items-center gap-4 mt-6 bg-slate-50 p-4 rounded-xl">
+              {/* <div className="flex items-center gap-4 mt-6 bg-slate-50 p-4 rounded-xl">
                 <div className="flex justify-center items-center w-12 h-12 bg-white rounded-xl text-blue-600 shadow-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -263,7 +264,7 @@ const CompanyProfile = () => {
                     <p className="text-sm text-slate-500">{profileData.location}</p>
                   )}
                 </div>
-              </div>
+              </div> */}
               
               <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/30 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
