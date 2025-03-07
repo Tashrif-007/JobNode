@@ -17,9 +17,10 @@ const OfferCard = ({ offer, newStatus }) => {
   const { user } = useAuth();
   const [status, setStatus] = useState(offer.status);
   const cvPath = offer.offerLetterPath.split("/").pop();
-
+  console.log(offer)
   const handleStatusChange = async (newStatus) => {
     try {
+      // First, update the status of the offer
       const res = await fetch(`http://localhost:3500/offer/updateStatus/${offer.offerId}`, {
         method: "PUT",
         headers: {
@@ -27,8 +28,27 @@ const OfferCard = ({ offer, newStatus }) => {
         },
         body: JSON.stringify({ status: newStatus })
       });
+
       if (res.ok) {
         setStatus(newStatus);
+
+        // If status is "Accepted", call the hire API to create a hiring record
+        if (newStatus === 'Accepted') {
+          const hireRes = await fetch('http://localhost:3500/hiring/hire', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              jobSeekerId: offer.jobSeekerId, // assuming `user.id` is the job seeker ID
+              companyId: offer.companyId, // assuming `offer.company.id` is the company ID
+            }),
+          });
+
+          if (!hireRes.ok) {
+            console.error("Failed to create hiring record");
+          }
+        }
       }
     } catch (error) {
       console.error("Failed to update status", error);
