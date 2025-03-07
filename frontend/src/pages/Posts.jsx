@@ -23,7 +23,7 @@ const Posts = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  const userId = user?.userId;
   const fetchPosts = async () => {
     try {
       setLoading(true);
@@ -51,9 +51,16 @@ const Posts = () => {
   const fetchAllPosts = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3500/post/getAllPosts");
-      const data = await res.json();
-      setPosts(data);
+      if(user?.userType==='JobSeeker') {
+        const res = await fetch("http://localhost:3500/post/getAllPosts");
+        const data = await res.json();
+        setPosts(data)
+      }
+      else {
+        const res = await fetch(`http://localhost:3500/post/getPostById/${userId}`);
+        const data = await res.json();
+        setPosts(data)
+      }
     } catch (error) {
       console.error(error.message);
     } finally {

@@ -1,294 +1,462 @@
-import { useState, useRef } from 'react';
-import { Save, Edit, Plus, Trash2, Camera, DollarSign, Briefcase } from 'lucide-react';
-
-const Profile = () => {
+import { useEffect, useState } from 'react';
+import {useAuth} from '../context/AuthContext'
+const JobSeekerProfile = () => {
+  
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
-    username: 'Sheikh Nahian',
-    email: 'sheikh.nahian@gmail.com',
-    salaryExpectation: 85000,
-    experience: [
-      { 
-        company: 'TechCorp',
-        role: 'Senior Software Engineer',
-        years: 3
-      },
-      { 
-        company: 'StartupX',
-        role: 'Software Engineer',
-        years: 2
-      }
-    ],
-    skills: ['React', 'Node.js', 'Python', 'Docker', 'AWS'],
-    profilePicture: '/api/placeholder/150/150'
+  const [newSkill, setNewSkill] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: "",
+    email: "",
+    salaryExpectation: "",
+    location: "",
+    experience: 0,
+    skills: [],
+    userType: ""
   });
-
-  const [newSkill, setNewSkill] = useState('');
-  const [newExperience, setNewExperience] = useState({
-    company: '',
-    role: '',
-    years: 0
-  });
-  const fileInputRef = useRef(null);
-
-  const handleInputChange = (e, setState, currentState) => {
+  const {user} = useAuth();
+  console.log(profileData)
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setState({
-      ...currentState,
+    setProfileData({
+      ...profileData,
       [name]: value
     });
   };
 
-  const handlePictureChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfile(prev => ({
-          ...prev,
-          profilePicture: reader.result
-        }));
-      };
-      reader.readAsDataURL(file);
+  const handleSkillChange = (index, value) => {
+    const updatedSkills = [...profileData.skills];
+    updatedSkills[index] = value;
+    setProfileData({
+      ...profileData,
+      skills: updatedSkills
+    });
+  };
+
+  const handleAddSkill = () => {
+    if (newSkill.trim() !== "") {
+      setProfileData({
+        ...profileData,
+        skills: [...profileData.skills, newSkill.trim()]
+      });
+      setNewSkill("");
     }
   };
 
-  const addSkill = () => {
-    if (newSkill && !profile.skills.includes(newSkill)) {
-      setProfile(prev => ({
-        ...prev,
-        skills: [...prev.skills, newSkill]
-      }));
-      setNewSkill('');
+  const handleRemoveSkill = (index) => {
+    const updatedSkills = [...profileData.skills];
+    updatedSkills.splice(index, 1);
+    setProfileData({
+      ...profileData,
+      skills: updatedSkills
+    });
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:3500/user/update/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setProfileData(data); // Update the local user data after successful update
+        setIsEditing(false); // Switch back to view mode
+        console.log("User updated successfully");
+      } else {
+        console.error("Failed to update user data");
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error);
     }
   };
 
-  const addExperience = () => {
-    if (newExperience.company && newExperience.role && newExperience.years > 0) {
-      setProfile(prev => ({
-        ...prev,
-        experience: [...prev.experience, newExperience]
-      }));
-      setNewExperience({ company: '', role: '', years: 0 });
-    }
-  };
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        setLoading(true)
+        const userId = user?.userId;
+        const response = await fetch(`http://localhost:3500/user/getUser/${userId}`);
 
-  const removeSkill = (skillToRemove) => {
-    setProfile(prev => ({
-      ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
-    }));
-  };
+        if (response.ok) {
+          const data = await response.json();
+          setProfileData(data);
+          // setUpdatedUser(data); // Pre-fill the form with the fetched data
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false)
+      }
+    };
+    if(user?.userId)
+    fetchUserDetails();
+  }, [user]);
 
-  const removeExperience = (companyToRemove) => {
-    setProfile(prev => ({
-      ...prev,
-      experience: prev.experience.filter(exp => exp.company !== companyToRemove)
-    }));
-  };
-
-  const handleSave = () => {
-    console.log('Saving profile:', profile);
-    setIsEditing(false);
-  };
-
+  if(loading) return (
+    <div>Loading...</div>
+  )
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6">
-      <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
-        <div className="bg-blue-500 text-white p-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Profile Settings</h1>
-          {!isEditing ? (
-            <button 
-              onClick={() => setIsEditing(true)} 
-              className="flex items-center bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-50"
-            >
-              <Edit className="mr-2" size={20} /> Edit Profile
-            </button>
+    <div className="bg-slate-100 text-slate-900 relative min-h-screen">
+      {/* Background gradient */}
+      <div className="absolute top-0 left-0 right-0 h-80 bg-gradient-to-r from-indigo-500 to-purple-500 z-0"></div>
+      
+      <div className="max-w-7xl mx-auto px-8 py-8 relative">
+        {/* Edit Mode Toggle Button */}
+        <div className="flex justify-end mb-4 relative z-10">
+          {isEditing ? (
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setIsEditing(false)} 
+                className="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-all flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+                Cancel
+              </button>
+              <button 
+                onClick={handleSave} 
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Changes
+              </button>
+            </div>
           ) : (
             <button 
-              onClick={handleSave} 
-              className="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+              onClick={() => setIsEditing(true)} 
+              className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-all flex items-center gap-2"
             >
-              <Save className="mr-2" size={20} /> Save Changes
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Edit Profile
             </button>
           )}
         </div>
-
-        <div className="p-6 space-y-6">
-          <div className="flex flex-col justify-center items-center space-x-6">
-            <div className="relative">
-              <img 
-                src={profile.profilePicture} 
-                alt="Profile" 
-                className="w-48 h-48 rounded-full object-cover border-4 border-blue-500"
-              />
-              {isEditing && (
-                <button 
-                  onClick={() => fileInputRef.current.click()}
-                  className="absolute bottom-2 right-2 bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 shadow-lg"
-                >
-                  <Camera size={24} />
-                </button>
-              )}
-              <input 
-                type="file" 
-                ref={fileInputRef}
-                onChange={handlePictureChange}
-                accept="image/*"
-                className="hidden"
-              />
-            </div>
-            {!isEditing ? (
-            <div className='flex flex-col items-center'>
-              <h2 className="text-2xl font-bold text-gray-800">{profile.username}</h2>
-              <p className="text-gray-600">{profile.email}</p>
-            </div>
-            ) : (
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  value={profile.username}
-                  onChange={(e) => setProfile(prev => ({...prev, username: e.target.value}))}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Username"
-                />
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => setProfile(prev => ({...prev, email: e.target.value}))}
-                  className="w-full px-3 py-2 border rounded"
-                  placeholder="Email"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="grid md:grid-cols-1 gap-6">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="flex items-center mb-4">
-                <DollarSign className="mr-3 text-green-500" size={24} />
-                <h3 className="text-xl font-semibold text-gray-800">Salary Expectation</h3>
-              </div>
-              {isEditing ? (
-                <input
-                  type="number"
-                  name="salaryExpectation"
-                  value={profile.salaryExpectation}
-                  onChange={(e) => setProfile(prev => ({...prev, salaryExpectation: parseInt(e.target.value)}))}
-                  className="w-full px-3 py-2 border rounded bg-white"
-                />
-              ) : (
-                <p className="text-2xl font-bold text-green-600">
-                  ${profile.salaryExpectation.toLocaleString()} / year
-                </p>
-              )}
-            </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center mb-4">
-                <Briefcase className="mr-3 text-blue-500" size={24} />
-                <h3 className="text-xl font-semibold text-gray-800">Professional Experience</h3>
+        
+        {/* Profile Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 pt-12">
+          {/* Sidebar Card */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:-translate-y-2 hover:shadow-lg transition-all relative">
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-8 text-white text-center relative">
+              <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                {profileData.userType}
               </div>
               
-              {profile.experience.map((exp, index) => (
-                <div 
-                  key={index} 
-                  className="flex justify-between items-center bg-white p-3 rounded-lg mb-2 shadow-sm"
-                >
-                  <div>
-                    <h4 className="font-bold">{exp.role}</h4>
-                    <p className="text-gray-600">{exp.company} - {exp.years} years</p>
+              {isEditing ? (
+                <div className="flex flex-col gap-4 mb-6">
+                  <input
+                    type="text"
+                    name="name"
+                    value={profileData.name}
+                    onChange={handleInputChange}
+                    className="p-2 rounded-lg text-slate-800 text-center"
+                    placeholder="Your Name"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={profileData.email}
+                    onChange={handleInputChange}
+                    className="p-2 rounded-lg text-slate-800 text-center"
+                    placeholder="Your Email"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="text-2xl font-semibold mb-2">{profileData.name}</div>
+                  <div className="text-sm opacity-90 mb-6">{profileData.email}</div>
+                </>
+              )}
+              
+              <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full text-sm backdrop-blur-sm">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                Available for hire
+              </div>
+              
+              {/* Decorative shape */}
+              <div className="absolute -top-5 -right-5 w-20 h-20 bg-purple-400 rounded-md rotate-45 opacity-50 z-0"></div>
+            </div>
+            
+            <div className="p-8 relative">
+              {/* <div className="mb-6">
+                <div className="text-sm text-slate-500 mb-2 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
+                    <path d="M2 10h20"></path>
+                  </svg>
+                  Job Title
+                </div>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="jobTitle"
+                    value={profileData.jobTitle}
+                    onChange={handleInputChange}
+                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
+                    placeholder="Job Title"
+                  />
+                ) : (
+                  <div className="text-base font-medium text-slate-900 pl-6">{profileData.jobTitle}</div>
+                )}
+              </div> */}
+              
+              <div className="mb-6">
+                <div className="text-sm text-slate-500 mb-2 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  Salary Expectation
+                </div>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="salaryExpectation"
+                    value={profileData.salaryExpectation}
+                    onChange={handleInputChange}
+                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
+                    placeholder="Salary Expectation"
+                  />
+                ) : (
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-500 text-white px-4 py-2 rounded-full font-medium text-sm mt-2 ml-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    {profileData.salaryExpectation}
                   </div>
-                  {isEditing && (
-                    <button 
-                      onClick={() => removeExperience(exp.company)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 size={20} />
-                    </button>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-4 mt-6 bg-slate-50 p-4 rounded-xl">
+                <div className="flex justify-center items-center w-12 h-12 bg-white rounded-xl text-purple-600 shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold mb-1">Location</h3>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="location"
+                      value={profileData.location}
+                      onChange={handleInputChange}
+                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full"
+                      placeholder="Your Location"
+                    />
+                  ) : (
+                    <p className="text-sm text-slate-500">{profileData.location}</p>
                   )}
                 </div>
-              ))}
-
-              {isEditing && (
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  <input
-                    type="text"
-                    name="company"
-                    placeholder="Company"
-                    value={newExperience.company}
-                    onChange={(e) => handleInputChange(e, setNewExperience, newExperience)}
-                    className="px-2 py-1 border rounded"
-                  />
-                  <input
-                    type="text"
-                    name="role"
-                    placeholder="Role"
-                    value={newExperience.role}
-                    onChange={(e) => handleInputChange(e, setNewExperience, newExperience)}
-                    className="px-2 py-1 border rounded"
-                  />
-                  <div className="flex">
+              </div>
+              
+              <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Contact Me
+              </button>
+              
+              {/* Decorative shape */}
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-400 rounded-full opacity-30 z-0"></div>
+            </div>
+          </div>
+          
+          {/* Main Content */}
+          <div className="flex flex-col gap-8 lg:col-span-2">
+            {/* Floating Stats */}
+            <div className="bg-white rounded-xl shadow-lg p-6 flex justify-around items-center relative z-10 hover:-translate-y-2 hover:shadow-lg transition-all">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600 mb-1">
+                  {isEditing ? (
                     <input
                       type="number"
-                      name="years"
-                      placeholder="Years"
-                      value={newExperience.years}
-                      onChange={(e) => handleInputChange(e, setNewExperience, newExperience)}
-                      className="px-2 py-1 border rounded w-full mr-2"
+                      name="yearsExperience"
+                      value={profileData.experience}
+                      onChange={handleInputChange}
+                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-16 text-center"
+                      min="0"
                     />
-                    <button 
-                      onClick={addExperience}
-                      className="bg-blue-500 text-white px-3 rounded"
+                  ) : (
+                    profileData.experience
+                  )}
+                </div>
+                <div className="text-sm text-slate-500">Years Experience</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600 mb-1">{profileData.skills.length}</div>
+                <div className="text-sm text-slate-500">Skills</div>
+              </div>
+            </div>
+            
+            {/* Description Card */}
+            <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
+              <div className="mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <div className="text-xl font-semibold text-slate-900">Profile Description</div>
+                </div>
+              </div>
+              
+              <div className="bg-slate-50 p-6 rounded-xl">
+                {isEditing ? (
+                  <textarea
+                    name="description"
+                    value={profileData.description}
+                    onChange={handleInputChange}
+                    className="p-4 rounded-lg border border-slate-300 text-slate-800 w-full h-32"
+                    placeholder="Write about your professional background, expertise, and what you're looking for"
+                  />
+                ) : (
+                  <div className="text-slate-700">{profileData.description}</div>
+                )}
+              </div>
+            </div>
+            
+            {/* Experience Card */}
+            <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
+              <div className="mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <div className="text-xl font-semibold text-slate-900">Experience</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-8 bg-slate-50 p-6 rounded-xl">
+                <div className="text-4xl font-bold text-purple-600 pr-8 border-r-2 border-slate-200">
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      name="yearsExperience"
+                      value={profileData.yearsExperience}
+                      onChange={handleInputChange}
+                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-16 text-center"
+                      min="0"
+                    />
+                  ) : (
+                    profileData.yearsExperience
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="text-lg font-semibold mb-1">Years of Professional Experience</div>
+                  <div className="text-sm text-slate-500">Working as a Senior Developer with expertise in full-stack development and leading technical teams on various projects.</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Skills Card */}
+            <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
+              <div className="mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                  </div>
+                  <div className="text-xl font-semibold text-slate-900">Skills</div>
+                </div>
+              </div>
+              
+              {/* Add Skill Form (visible only in edit mode) */}
+              {isEditing && (
+                <div className="mb-6 bg-slate-50 p-4 rounded-xl">
+                  <div className="text-base font-medium mb-2">Add New Skill</div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newSkill}
+                      onChange={(e) => setNewSkill(e.target.value)}
+                      className="flex-1 p-2 rounded-lg border border-slate-300 text-slate-800"
+                      placeholder="Enter a new skill"
+                    />
+                    <button
+                      onClick={handleAddSkill}
+                      className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-all flex items-center gap-2"
                     >
-                      <Plus size={20} />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      Add
                     </button>
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="flex items-center mb-4">
-              <Plus className="mr-3 text-green-500" size={24} />
-              <h3 className="text-xl font-semibold text-gray-800">Skills</h3>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 mb-4">
-              {profile.skills.map((skill) => (
-                <div 
-                  key={skill} 
-                  className="bg-green-100 px-3 py-1 rounded-full flex items-center"
-                >
-                  {skill}
-                  {isEditing && (
-                    <button 
-                      onClick={() => removeSkill(skill)}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {isEditing && (
-              <div className="flex">
-                <input
-                  type="text"
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="Add a new skill"
-                  className="flex-grow px-3 py-2 border rounded mr-2"
-                />
-                <button 
-                  onClick={addSkill} 
-                  className="bg-green-500 text-white px-4 rounded hover:bg-green-600"
-                >
-                  <Plus size={20} />
-                </button>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+                {profileData.skills.map((skill, index) => (
+                  <div key={index} className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl hover:-translate-y-2 hover:shadow-md hover:bg-white transition-all">
+                    <div className="w-10 h-10 bg-purple-400 rounded-xl flex items-center justify-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+                        <line x1="12" y1="22" x2="12" y2="15.5"></line>
+                        <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+                        <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="8.5"></line>
+                      </svg>
+                    </div>
+                    {isEditing ? (
+                      <div className="flex-1 flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={skill}
+                          onChange={(e) => handleSkillChange(index, e.target.value)}
+                          className="flex-1 p-2 rounded-lg border border-slate-300 text-slate-800"
+                        />
+                        <button 
+                          onClick={() => handleRemoveSkill(index)}
+                          className="text-red-500 hover:text-red-600"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="font-medium text-sm">{skill}</div>
+                    )}
+                  </div>
+                ))} 
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -296,4 +464,6 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default JobSeekerProfile;
+
+

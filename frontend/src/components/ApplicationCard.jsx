@@ -63,9 +63,6 @@ const ApplicationCard = ({ app, onStatusChange }) => {
       console.error(error.message);
 
     }
-
-
-
     navigate('/chats');
 
   };
@@ -250,8 +247,10 @@ const ApplicationCard = ({ app, onStatusChange }) => {
             <div className="flex items-center">
               <User className="mr-3 text-indigo-500" size={24} />
               <div>
-                <h4 className="text-xl font-semibold text-gray-800 tracking-wide">{app.userName}</h4>
-                <p className="text-sm text-gray-600">{app.jobPost.name}</p>
+                <h4 className="text-xl font-semibold text-gray-800 tracking-wide">
+                  {user?.userType==='JobSeeker' ? app.jobPost.user.name : app.userName}
+                  </h4>
+                <p className="text-sm text-gray-600">{app.jobPost.position}</p>
               </div>
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle.bgColor} ${statusStyle.textColor}`}>

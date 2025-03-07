@@ -49,7 +49,11 @@ export const getApplicationsById = async (req, res) => {
         userId: parseInt(userId), 
       },
       include: {
-        jobPost: true, 
+        jobPost: {
+          include: {
+            user: true,
+          }
+        } 
       },
     });
 
