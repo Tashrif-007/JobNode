@@ -13,6 +13,7 @@ import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import RecommendedPosts from './pages/Recommend';
 import JobOffers from './pages/Offer';
+import CompanyProfile from './pages/CompanyProfile';
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password' element={<ResetPassword />}/>
           <Route path='/profile' element={<Profile />}/>
+          <Route path='/companyprofile' element={<CompanyProfile />}/>
           <Route path='/recommendations' element={<RecommendedPosts />}/>
           <Route path='/offer' element={<JobOffers />}/>
         </Routes>
