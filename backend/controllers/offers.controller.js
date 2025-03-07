@@ -11,66 +11,58 @@ const generateOfferLetter = async (jobSeeker, company, jobPost) => {
   return new Promise((resolve, reject) => {
       try {
           const uploadsFolder = path.join(__dirname, '../middlewares/uploads');
-
           if (!fs.existsSync(uploadsFolder)) {
               fs.mkdirSync(uploadsFolder, { recursive: true });
           }
 
           const fileName = `offer_letter_${Date.now()}.pdf`;
           const filePath = path.join(uploadsFolder, fileName);
-
           const doc = new PDFDocument();
           const stream = fs.createWriteStream(filePath);
           doc.pipe(stream);
 
-          // PDF Header - Company Name and title
-          doc.fontSize(18).text(company.name, { align: 'left', font: 'Helvetica-Bold' });
-          doc.fontSize(12).text(company.address, { align: 'left' });
-          doc.moveDown();
-          doc.text('--------------------------------------------------------', { align: 'center' });
-          doc.moveDown();
-          doc.fontSize(22).text('Job Offer Letter', { align: 'center', font: 'Helvetica-Bold' });
-          doc.text('--------------------------------------------------------', { align: 'center' });
-          doc.moveDown(2);
-
-          // Salutation
-          doc.fontSize(14).text(`Dear ${jobSeeker.name},`, { align: 'left' });
-          doc.moveDown();
-
-          // Introduction and Offer Details
-          doc.fontSize(12).text('Congratulations! We are pleased to offer you the position of:', { align: 'left' });
-          doc.moveDown();
-          doc.fontSize(14).text(`${jobPost.position}`, { align: 'left', font: 'Helvetica-Bold' });
-          doc.moveDown();
-
-          // Salary Details
-          doc.fontSize(12).text('Position at our company', { align: 'left' });
-          doc.fontSize(14).text(`Salary: ${jobPost.salary}`, { align: 'left', font: 'Helvetica-Bold' });
+          // Company Name and Date
+          doc.fontSize(14).text(company.name, { align: 'left' });
+          doc.fontSize(12).text(new Date().toDateString(), { align: 'left' });
           doc.moveDown();
           
-          // Details of Employment
-          doc.fontSize(12).text('Start Date: ________________', { align: 'left' });
-          doc.fontSize(12).text('Job Location: ________________', { align: 'left' });
+          // Subject
+          doc.fontSize(14).text(`Subject: Employment offer from ${company.name}`, { align: 'left', font: 'Helvetica-Bold' });
+          doc.moveDown();
+          
+          // Salutation
+          doc.fontSize(12).text(`Dear ${jobSeeker.name},`, { align: 'left', font: 'Helvetica-Oblique' });
+          doc.moveDown();
+          
+          // Offer Details
+          doc.fontSize(12).text(`We are pleased to offer you the position of ${jobPost.position} at ${company.name}.`, { align: 'left' });
+          doc.moveDown();
+          
+          doc.fontSize(12).text(`Your annual cost to company is ₹ ${jobPost.salary} [in words]. The breakdown of your gross salary and information specific to employee benefits can be found in Annexure A.`, { align: 'left' });
+          doc.moveDown();
+          
+          // doc.fontSize(12).text(`We would like you to start work on ${jobPost.startDate} from the base location, ${jobPost.location}.`, { align: 'left' });
+          // doc.moveDown();
+          
+          // Acceptance Instructions
+          doc.fontSize(12).text(`If you choose to accept this job offer, please sign and return this letter by ${company.email}. Once we receive your acceptance, we will provide information about onboarding and other asset details.`, { align: 'left' });
+          doc.moveDown();
+          
+          // Closing
+          doc.fontSize(12).text(`We are confident that you will find this offer exciting, and I, on behalf of ${company.name}, assure you of a very rewarding career in our organization.`, { align: 'left' });
+          doc.moveDown(2);
+          
+          doc.fontSize(12).text('Sincerely,', { align: 'left' });
+          doc.fontSize(12).text("HR", { align: 'left' });
+          doc.fontSize(12).text(company.name, { align: 'left' });
           doc.moveDown(2);
 
-          // Acceptance and Next Steps
-          doc.fontSize(12).text('Please sign and return this offer letter to confirm your acceptance.', { align: 'left' });
-          doc.moveDown();
-
-          // Closing
-          doc.text('We look forward to welcoming you to our team at ' + company.name + '!');
-          doc.moveDown();
-          doc.fontSize(12).text('Sincerely,', { align: 'left' });
-          doc.fontSize(14).text(company.name, { align: 'left', font: 'Helvetica-Bold' });
-          doc.fontSize(12).text(company.contactInfo, { align: 'left' });
-
-          // Signature space
-          doc.moveDown(3);
+          // Signature Space
           doc.text('-------------------------------', { align: 'left' });
           doc.text('Employee Signature', { align: 'left' });
 
           doc.end();
-
+          
           stream.on('finish', () => {
               resolve(`middlewares/uploads/${fileName}`);
           });
@@ -84,6 +76,7 @@ const generateOfferLetter = async (jobSeeker, company, jobPost) => {
       }
   });
 };
+
 
 
 import { PrismaClient } from '@prisma/client';
@@ -101,11 +94,17 @@ export const sendOfferLetter = async (req, res) => {
         }
 
         const jobSeeker = await prisma.user.findUnique({
-            where: { id: parseInt(jobSeekerId) }
+            where: { id: parseInt(jobSeekerId) },
+            include: {
+              jobSeeker: true,
+            }
         });
 
         const company = await prisma.user.findUnique({
-            where: { id: parseInt(companyId) }
+            where: { id: parseInt(companyId) },
+            include: {
+              company: true,
+            }
         });
 
         const application = await prisma.apply.findUnique({
