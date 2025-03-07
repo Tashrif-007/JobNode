@@ -9,6 +9,7 @@ import {
   X 
 } from 'lucide-react';
 
+
 const JobApplications = () => {
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
