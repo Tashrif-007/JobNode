@@ -120,7 +120,9 @@ const HiresCard = ({ hire }) => {
               
               <div>
                 <h4 className="text-sm font-semibold text-gray-500 mb-1">Application Date</h4>
-                <p className="text-lg">{hire.jobSeeker.applications[0].dateCreated || "Not available"}</p>
+                <p className="text-lg">
+                   {hire.jobSeeker.applications[0].dateCreated ? new Date(hire.jobSeeker.applications[0].dateCreated).toLocaleDateString() : "Not available"}
+                </p>
               </div>
             </div>
             
