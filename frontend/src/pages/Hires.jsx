@@ -40,7 +40,7 @@ const HiresPage = () => {
       let filtered = hires;
       if (searchQuery.trim() !== "") {
         filtered = filtered.filter((hire) =>
-          hire.jobSeekerName.toLowerCase().includes(searchQuery.toLowerCase())
+          hire.jobSeeker.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
       setFilteredHires(filtered);
