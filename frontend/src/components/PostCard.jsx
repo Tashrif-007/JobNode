@@ -9,15 +9,20 @@ import {
   ArrowRight,
   CheckCircle,
   X,
-  Upload
+  Upload,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 
-const PostCard = ({ title, location, description, salaryRange, experience, skills, jobPostId, deadline }) => {
+const PostCard = ({ title, location, description, salaryRange, experience, skills, jobPostId, deadline, onDelete }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [cv, setCv] = useState(null);
   const [alreadyApplied, setAlreadyApplied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
     const checkApplication = async () => {
@@ -88,6 +93,41 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
     const file = e.target.files[0];
     setCv(file);
   };
+
+  // Updated delete function to prevent page refresh
+  const handleDelete = async () => {
+    try {
+      setDeleteLoading(true);
+      const response = await fetch(`http://localhost:3500/post/deletePost/${jobPostId}`, {
+        method: "DELETE",
+        // No token sent as requested
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(data.message || "Job post deleted successfully");
+        // Instead of refreshing, set this card as deleted
+        setIsDeleted(true);
+        // If parent component provided an onDelete callback, call it
+        if (typeof onDelete === 'function') {
+          onDelete(jobPostId);
+        }
+      } else {
+        toast.error(data.error || "Failed to delete job post");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the job post");
+      console.error(error);
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  // If the post is deleted, don't render anything
+  if (isDeleted) {
+    return null;
+  }
 
   // Split and trim skills, limit to 3 visible skills
   const skillsList = skills.split(',').map(skill => skill.trim());
@@ -177,9 +217,20 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
               )}
             </>
           )}
+
+          {/* Updated Delete Button with custom modal trigger */}
+          {user && user.userType === "Company" && (
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="w-full flex items-center justify-center bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors border border-gray-300"
+            >
+              <Trash2 className="mr-2 w-5 h-5 text-gray-600" /> Remove Job Post
+            </button>
+          )}
         </div>
       </div>
 
+      {/* Apply Modal */}
       {open && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl relative">
@@ -226,6 +277,42 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
                 {loading ? "Submitting..." : "Submit Application"}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Delete Confirmation Modal - similar to the one in the image */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl relative">
+            <div className="p-6 flex flex-col items-center">
+              <div className="text-center mb-4">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-2">
+                  <AlertTriangle className="h-10 w-10 text-red-400" />
+                </div>
+                <h3 className="text-xl font-medium text-red-500">Delete Post</h3>
+              </div>
+
+              <div className="text-center mb-6">
+                <p className="text-gray-600 mb-4">Warning: this cannot be undone.</p>
+              </div>
+
+              <div className="flex w-full space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors text-sm"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleteLoading}
+                  className="flex-1 py-3 px-4 rounded-lg text-white text-sm font-medium transition-colors bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600"
+                >
+                  {deleteLoading ? "DELETING..." : "YES, DELETE POST"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
