@@ -14,6 +14,7 @@ import Chat from './pages/Chat';
 import RecommendedPosts from './pages/Recommend';
 import JobOffers from './pages/Offer';
 import CompanyProfile from './pages/CompanyProfile';
+import HiresPage from './pages/Hires';
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
           <Route path='/companyprofile' element={<CompanyProfile />}/>
           <Route path='/recommendations' element={<RecommendedPosts />}/>
           <Route path='/offer' element={<JobOffers />}/>
+          <Route path='/hires' element={<HiresPage />}/>
         </Routes>
       </div>
     // </Router>

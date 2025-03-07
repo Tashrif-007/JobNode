@@ -29,3 +29,42 @@ export const hire = async (req, res) => {
       res.status(500).json({ error: "An error occurred while hiring." });
     }
   };
+
+
+  export const getHires = async (req, res) => {
+    try {
+      const { companyId } = req.params;
+  
+      // Fetch all hires for the given companyId
+      const hires = await prisma.hires.findMany({
+        where: {
+          companyId: parseInt(companyId),  // Match the companyId
+        },
+        include: {
+          jobSeeker: {  // Include jobSeeker details
+            include: {
+              // Include the user details (e.g., name, email)
+              // Add jobPosts the jobSeeker has applied for
+              applications: {
+                include: {
+                  jobPost: true, // Include the job post the job seeker applied to
+                }
+              },
+            },
+          },
+          company: true,    // Include company details
+        },
+      });
+  
+      // If no hires are found
+      if (hires.length === 0) {
+        return res.status(404).json({ message: "No hires found for this company." });
+      }
+  
+      res.status(200).json(hires);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "An error occurred while fetching the hires." });
+    }
+  };
+  
