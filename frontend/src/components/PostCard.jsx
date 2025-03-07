@@ -11,7 +11,9 @@ import {
   X,
   Upload,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Clock,
+  XCircle
 } from 'lucide-react';
 
 const PostCard = ({ title, location, description, salaryRange, experience, skills, jobPostId, deadline, onDelete }) => {
@@ -23,6 +25,30 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isDeadlineSoon, setIsDeadlineSoon] = useState(false);
+  const [isDeadlineExpired, setIsDeadlineExpired] = useState(false);
+  const [daysRemaining, setDaysRemaining] = useState(null);
+
+  useEffect(() => {
+    // Check if deadline is within 3 days or expired
+    const checkDeadline = () => {
+      if (deadline) {
+        const deadlineDate = new Date(deadline);
+        const currentDate = new Date();
+        
+        // Calculate difference in milliseconds
+        const diffTime = deadlineDate - currentDate;
+        // Convert to days
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        setDaysRemaining(diffDays);
+        setIsDeadlineSoon(diffDays <= 3 && diffDays > 0);
+        setIsDeadlineExpired(diffDays <= 0);
+      }
+    };
+    
+    checkDeadline();
+  }, [deadline]);
 
   useEffect(() => {
     const checkApplication = async () => {
@@ -51,6 +77,14 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
 
   const handleApply = async (e) => {
     e.preventDefault();
+    
+    // Don't allow applications if deadline has expired
+    if (isDeadlineExpired) {
+      toast.error("Application deadline has expired.");
+      setOpen(false);
+      return;
+    }
+    
     if (!cv) {
       toast.error("Please upload your CV.");
       return;
@@ -134,9 +168,20 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
   const visibleSkills = skillsList.slice(0, 3);
   const extraSkillsCount = Math.max(0, skillsList.length - 3);
 
+  // Determine border color based on deadline
+  const getBorderClass = () => {
+    if (isDeadlineExpired) {
+      return "border-gray-400";
+    }
+    if (isDeadlineSoon) {
+      return "border-red-500 hover:border-red-600";
+    }
+    return "border-indigo-500 hover:border-purple-500";
+  };
+
   return (
     <>
-      <div className="flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-white border-2 border-indigo-500 hover:border-purple-500 rounded-lg p-6 shadow-lg">
+      <div className={`flex flex-col h-full transform transition-all duration-300 ${!isDeadlineExpired ? 'hover:scale-105' : ''} hover:shadow-lg bg-white border-2 ${getBorderClass()} rounded-lg p-6 shadow-lg ${isDeadlineExpired ? 'opacity-75' : ''}`}>
         <div className="flex justify-between items-center mb-4">
           <div className="flex-grow">
             <h3 className="text-2xl font-bold text-gray-800 truncate">{title}</h3>
@@ -145,8 +190,8 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
               <span className="text-sm truncate">{location}</span>
             </div>
           </div>
-          <div className="bg-purple-100 rounded-full p-3 ml-2">
-            <Briefcase className="w-6 h-6 text-purple-600" />
+          <div className={`${isDeadlineExpired ? 'bg-gray-200' : 'bg-purple-100'} rounded-full p-3 ml-2`}>
+            <Briefcase className={`w-6 h-6 ${isDeadlineExpired ? 'text-gray-500' : 'text-purple-600'}`} />
           </div>
         </div>
 
@@ -191,19 +236,37 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
         </div>
 
         <div className="mb-4">
-          <div className="flex items-center text-gray-500 mt-1">
-            <span className="text-xs font-semibold text-gray-700">Deadline: </span>
-            <span className="text-sm">{new Date(deadline).toLocaleDateString()}</span>
-          </div>
+          {isDeadlineExpired ? (
+            <div className="flex items-center text-gray-500 mt-1">
+              <XCircle className="w-4 h-4 mr-1 text-red-500" />
+              <span className="text-xs font-semibold text-red-500">Deadline expired: </span>
+              <span className="text-sm ml-1 text-gray-500">{new Date(deadline).toLocaleDateString()}</span>
+            </div>
+          ) : (
+            <div className={`flex items-center ${isDeadlineSoon ? 'text-red-600' : 'text-gray-500'} mt-1`}>
+              <Clock className={`w-4 h-4 mr-1 ${isDeadlineSoon ? 'text-red-600' : 'text-gray-500'}`} />
+              <span className="text-xs font-semibold">Deadline: </span>
+              <span className="text-sm ml-1">{new Date(deadline).toLocaleDateString()}</span>
+              {isDeadlineSoon && (
+                <span className="ml-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                  {daysRemaining === 1 ? "Last day!" : `${daysRemaining} days left!`}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="mt-auto">
           {user && user.userType === "JobSeeker" && (
             <>
-              {!alreadyApplied ? (
+              {isDeadlineExpired ? (
+                <div className="w-full flex items-center justify-center bg-gray-300 text-gray-600 py-3 rounded-lg">
+                  <XCircle className="mr-2 w-5 h-5" /> Deadline Expired
+                </div>
+              ) : !alreadyApplied ? (
                 <button
                   onClick={() => setOpen(true)}
-                  className="w-full flex items-center justify-center bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors"
+                  className={`w-full flex items-center justify-center ${isDeadlineSoon ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700'} text-white py-3 rounded-lg transition-colors`}
                 >
                   Apply Now <ArrowRight className="ml-2 w-5 h-5" />
                 </button>
@@ -271,10 +334,10 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
               </div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || isDeadlineExpired}
                 className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
               >
-                {loading ? "Submitting..." : "Submit Application"}
+                {loading ? "Submitting..." : isDeadlineExpired ? "Deadline Expired" : "Submit Application"}
               </button>
             </form>
           </div>
