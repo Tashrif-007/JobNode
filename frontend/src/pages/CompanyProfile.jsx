@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
-import {useAuth} from '../context/AuthContext'
-const JobSeekerProfile = () => {
-  
+import { useAuth } from '../context/AuthContext';
+
+const CompanyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [newSkill, setNewSkill] = useState("");
+  const [newTech, setNewTech] = useState("");
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
-    salaryExpectation: "",
+    website: "",
     location: "",
-    experience: 0,
-    skills: [],
+    techStack: [],
+    description: "",
     userType: ""
   });
-  const {user} = useAuth();
-  console.log(profileData)
+  
+  const { user } = useAuth();
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfileData({
@@ -24,38 +25,39 @@ const JobSeekerProfile = () => {
     });
   };
 
-  const handleSkillChange = (index, value) => {
-    const updatedSkills = [...profileData.skills];
-    updatedSkills[index] = value;
+  const handleTechChange = (index, value) => {
+    const updatedTechStack = [...profileData.techStack];
+    updatedTechStack[index] = value;
     setProfileData({
       ...profileData,
-      skills: updatedSkills
+      techStack: updatedTechStack
     });
   };
 
-  const handleAddSkill = () => {
-    if (newSkill.trim() !== "") {
+  const handleAddTech = () => {
+    if (newTech.trim() !== "") {
       setProfileData({
         ...profileData,
-        skills: [...profileData.skills, newSkill.trim()]
+        techStack: [...profileData.techStack, newTech.trim()]
       });
-      setNewSkill("");
+      setNewTech("");
     }
   };
 
-  const handleRemoveSkill = (index) => {
-    const updatedSkills = [...profileData.skills];
-    updatedSkills.splice(index, 1);
+  const handleRemoveTech = (index) => {
+    const updatedTechStack = [...profileData.techStack];
+    updatedTechStack.splice(index, 1);
     setProfileData({
       ...profileData,
-      skills: updatedSkills
+      techStack: updatedTechStack
     });
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3500/user/update/${userId}`, {
+      const userId = user?.userId;
+      const response = await fetch(`http://localhost:3500/user/updateCompany/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -67,54 +69,62 @@ const JobSeekerProfile = () => {
         const data = await response.json();
         setProfileData(data); // Update the local user data after successful update
         setIsEditing(false); // Switch back to view mode
-        console.log("User updated successfully");
+        console.log("Company profile updated successfully");
       } else {
-        console.error("Failed to update user data");
+        console.error("Failed to update company data");
       }
     } catch (error) {
-      console.error("Error updating user data:", error);
+      console.error("Error updating company data:", error);
     }
   };
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const fetchCompanyDetails = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
         const userId = user?.userId;
+        console.log(userId)
         const response = await fetch(`http://localhost:3500/user/getUser/${userId}`, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             userType: user?.userType,
           })
         });
-
+        
         if (response.ok) {
           const data = await response.json();
-          setProfileData(data);
-          // setUpdatedUser(data); // Pre-fill the form with the fetched data
+          const updatedData = {
+            ...data,
+            techStack: data.techStack ? data.techStack.split(',').map(item => item.trim()) : []
+          };
+          console.log(updatedData)
+          setProfileData(updatedData);
         } else {
-          console.error("Failed to fetch user data");
+          console.error("Failed to fetch company data");
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching company data:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
-    if(user?.userId)
-    fetchUserDetails();
+    
+    if (user?.userId) {
+      fetchCompanyDetails();
+    }
   }, [user]);
 
-  if(loading) return (
+  if (loading) return (
     <div>Loading...</div>
-  )
+  );
+  
   return (
     <div className="bg-slate-100 text-slate-900 relative min-h-screen">
       {/* Background gradient */}
-      <div className="absolute top-0 left-0 right-0 h-80 bg-gradient-to-r from-indigo-500 to-purple-500 z-0"></div>
+      <div className="absolute top-0 left-0 right-0 h-80 bg-gradient-to-r from-blue-500 to-cyan-500 z-0"></div>
       
       <div className="max-w-7xl mx-auto px-8 py-8 relative">
         {/* Edit Mode Toggle Button */}
@@ -145,7 +155,7 @@ const JobSeekerProfile = () => {
           ) : (
             <button 
               onClick={() => setIsEditing(true)} 
-              className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-all flex items-center gap-2"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all flex items-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -160,13 +170,11 @@ const JobSeekerProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 pt-12">
           {/* Sidebar Card */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:-translate-y-2 hover:shadow-lg transition-all relative">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-8 text-white text-center relative">
+            <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-8 text-white text-center relative">
               <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                 </svg>
                 {profileData.userType}
               </div>
@@ -179,7 +187,7 @@ const JobSeekerProfile = () => {
                     value={profileData.name}
                     onChange={handleInputChange}
                     className="p-2 rounded-lg text-slate-800 text-center"
-                    placeholder="Your Name"
+                    placeholder="Company Name"
                   />
                   <input
                     type="email"
@@ -187,7 +195,7 @@ const JobSeekerProfile = () => {
                     value={profileData.email}
                     onChange={handleInputChange}
                     className="p-2 rounded-lg text-slate-800 text-center"
-                    placeholder="Your Email"
+                    placeholder="Company Email"
                   />
                 </div>
               ) : (
@@ -199,66 +207,42 @@ const JobSeekerProfile = () => {
               
               <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full text-sm backdrop-blur-sm">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                Available for hire
+                Actively Hiring
               </div>
               
               {/* Decorative shape */}
-              <div className="absolute -top-5 -right-5 w-20 h-20 bg-purple-400 rounded-md rotate-45 opacity-50 z-0"></div>
+              <div className="absolute -top-5 -right-5 w-20 h-20 bg-cyan-400 rounded-md rotate-45 opacity-50 z-0"></div>
             </div>
             
             <div className="p-8 relative">
-              {/* <div className="mb-6">
-                <div className="text-sm text-slate-500 mb-2 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
-                    <path d="M2 10h20"></path>
-                  </svg>
-                  Job Title
-                </div>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="jobTitle"
-                    value={profileData.jobTitle}
-                    onChange={handleInputChange}
-                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
-                    placeholder="Job Title"
-                  />
-                ) : (
-                  <div className="text-base font-medium text-slate-900 pl-6">{profileData.jobTitle}</div>
-                )}
-              </div> */}
-              
               <div className="mb-6">
                 <div className="text-sm text-slate-500 mb-2 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                   </svg>
-                  Salary Expectation
+                  Website
                 </div>
                 {isEditing ? (
                   <input
                     type="text"
-                    name="salaryExpectation"
-                    value={profileData.salaryExpectation}
+                    name="website"
+                    value={profileData.website}
                     onChange={handleInputChange}
                     className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
-                    placeholder="Salary Expectation"
+                    placeholder="Company Website"
                   />
                 ) : (
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-500 text-white px-4 py-2 rounded-full font-medium text-sm mt-2 ml-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="12" y1="1" x2="12" y2="23"></line>
-                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                    {profileData.salaryExpectation}
+                  <div className="text-base font-medium text-blue-600 pl-6">
+                    <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      {profileData.website}
+                    </a>
                   </div>
                 )}
               </div>
               
               <div className="flex items-center gap-4 mt-6 bg-slate-50 p-4 rounded-xl">
-                <div className="flex justify-center items-center w-12 h-12 bg-white rounded-xl text-purple-600 shadow-sm">
+                <div className="flex justify-center items-center w-12 h-12 bg-white rounded-xl text-blue-600 shadow-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                     <circle cx="12" cy="10" r="3"></circle>
@@ -273,7 +257,7 @@ const JobSeekerProfile = () => {
                       value={profileData.location}
                       onChange={handleInputChange}
                       className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full"
-                      placeholder="Your Location"
+                      placeholder="Company Location"
                     />
                   ) : (
                     <p className="text-sm text-slate-500">{profileData.location}</p>
@@ -281,16 +265,16 @@ const JobSeekerProfile = () => {
                 </div>
               </div>
               
-              <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 transition-all">
+              <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/30 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                   <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
-                Contact Me
+                Contact Us
               </button>
               
               {/* Decorative shape */}
-              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-400 rounded-full opacity-30 z-0"></div>
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-400 rounded-full opacity-30 z-0"></div>
             </div>
           </div>
           
@@ -299,33 +283,18 @@ const JobSeekerProfile = () => {
             {/* Floating Stats */}
             <div className="bg-white rounded-xl shadow-lg p-6 flex justify-around items-center relative z-10 hover:-translate-y-2 hover:shadow-lg transition-all">
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-1">
-                  {isEditing ? (
-                    <input
-                      type="number"
-                      name="yearsExperience"
-                      value={profileData.experience}
-                      onChange={handleInputChange}
-                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-16 text-center"
-                      min="0"
-                    />
-                  ) : (
-                    profileData.experience
-                  )}
+                <div className="text-2xl font-bold text-blue-600 mb-1">
+                  {profileData.techStack.length}
                 </div>
-                <div className="text-sm text-slate-500">Years Experience</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-1">{profileData.skills.length}</div>
-                <div className="text-sm text-slate-500">Skills</div>
+                <div className="text-sm text-slate-500">Technologies</div>
               </div>
             </div>
             
-            {/* Description Card */}
+            {/* Company Description Card */}
             <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
               <div className="mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-blue-600">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                       <polyline points="14 2 14 8 20 8"></polyline>
@@ -334,7 +303,7 @@ const JobSeekerProfile = () => {
                       <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
                   </div>
-                  <div className="text-xl font-semibold text-slate-900">Profile Description</div>
+                  <div className="text-xl font-semibold text-slate-900">Company Description</div>
                 </div>
               </div>
               
@@ -344,8 +313,8 @@ const JobSeekerProfile = () => {
                     name="description"
                     value={profileData.description}
                     onChange={handleInputChange}
-                    className="p-4 rounded-lg border border-slate-300 text-slate-800 w-full h-32"
-                    placeholder="Write about your professional background, expertise, and what you're looking for"
+                    className="p-4 rounded-lg border border-slate-300 text-slate-800 w-full h-48"
+                    placeholder="Write about your company, mission, values, and what you're looking for in potential candidates"
                   />
                 ) : (
                   <div className="text-slate-700">{profileData.description}</div>
@@ -353,70 +322,36 @@ const JobSeekerProfile = () => {
               </div>
             </div>
             
-            {/* Experience Card */}
+            {/* Tech Stack Card */}
             <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
               <div className="mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-blue-600">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="12 6 12 12 16 14"></polyline>
+                      <path d="M16 18l6-6-6-6"></path>
+                      <path d="M8 6l-6 6 6 6"></path>
+                      <line x1="12" y1="2" x2="12" y2="22"></line>
                     </svg>
                   </div>
-                  <div className="text-xl font-semibold text-slate-900">Experience</div>
+                  <div className="text-xl font-semibold text-slate-900">Tech Stack</div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-8 bg-slate-50 p-6 rounded-xl">
-                <div className="text-4xl font-bold text-purple-600 pr-8 border-r-2 border-slate-200">
-                  {isEditing ? (
-                    <input
-                      type="number"
-                      name="yearsExperience"
-                      value={profileData.yearsExperience}
-                      onChange={handleInputChange}
-                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-16 text-center"
-                      min="0"
-                    />
-                  ) : (
-                    profileData.yearsExperience
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className="text-lg font-semibold mb-1">Years of Professional Experience</div>
-                  <div className="text-sm text-slate-500">Working as a Senior Developer with expertise in full-stack development and leading technical teams on various projects.</div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Skills Card */}
-            <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
-              <div className="mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
-                  </div>
-                  <div className="text-xl font-semibold text-slate-900">Skills</div>
-                </div>
-              </div>
-              
-              {/* Add Skill Form (visible only in edit mode) */}
+              {/* Add Tech Form (visible only in edit mode) */}
               {isEditing && (
                 <div className="mb-6 bg-slate-50 p-4 rounded-xl">
-                  <div className="text-base font-medium mb-2">Add New Skill</div>
+                  <div className="text-base font-medium mb-2">Add Technology</div>
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={newSkill}
-                      onChange={(e) => setNewSkill(e.target.value)}
+                      value={newTech}
+                      onChange={(e) => setNewTech(e.target.value)}
                       className="flex-1 p-2 rounded-lg border border-slate-300 text-slate-800"
-                      placeholder="Enter a new skill"
+                      placeholder="Enter a technology"
                     />
                     <button
-                      onClick={handleAddSkill}
-                      className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-all flex items-center gap-2"
+                      onClick={handleAddTech}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all flex items-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -429,27 +364,25 @@ const JobSeekerProfile = () => {
               )}
               
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-                {profileData.skills.map((skill, index) => (
+                {profileData.techStack.map((tech, index) => (
                   <div key={index} className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl hover:-translate-y-2 hover:shadow-md hover:bg-white transition-all">
-                    <div className="w-10 h-10 bg-purple-400 rounded-xl flex items-center justify-center text-white">
+                    <div className="w-10 h-10 bg-blue-400 rounded-xl flex items-center justify-center text-white">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
-                        <line x1="12" y1="22" x2="12" y2="15.5"></line>
-                        <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
-                        <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
-                        <line x1="12" y1="2" x2="12" y2="8.5"></line>
+                        <path d="M18 10h-4V6"></path>
+                        <path d="M14 10l7-7"></path>
+                        <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>
                       </svg>
                     </div>
                     {isEditing ? (
                       <div className="flex-1 flex items-center gap-2">
                         <input
                           type="text"
-                          value={skill}
-                          onChange={(e) => handleSkillChange(index, e.target.value)}
+                          value={tech}
+                          onChange={(e) => handleTechChange(index, e.target.value)}
                           className="flex-1 p-2 rounded-lg border border-slate-300 text-slate-800"
                         />
                         <button 
-                          onClick={() => handleRemoveSkill(index)}
+                          onClick={() => handleRemoveTech(index)}
                           className="text-red-500 hover:text-red-600"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -459,10 +392,10 @@ const JobSeekerProfile = () => {
                         </button>
                       </div>
                     ) : (
-                      <div className="font-medium text-sm">{skill}</div>
+                      <div className="font-medium text-sm">{tech}</div>
                     )}
                   </div>
-                ))} 
+                ))}
               </div>
             </div>
           </div>
@@ -472,6 +405,4 @@ const JobSeekerProfile = () => {
   );
 };
 
-export default JobSeekerProfile;
-
-
+export default CompanyProfile;

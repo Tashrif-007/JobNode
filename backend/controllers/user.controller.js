@@ -51,42 +51,94 @@ try {
     res.status(500).json({ message: "Internal server error" });
 }
 };
+export const updateCompanyProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, email, description, techStack, website } = req.body;
+
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) },
+      include: { company: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.userType !== "Company") {
+      return res.status(400).json({ message: "User is not a company" });
+    }
+
+    // Update User table
+    await prisma.user.update({
+      where: { id: parseInt(userId) },
+      data: { name, email }
+    });
+
+    // Update Company table
+    await prisma.company.upsert({
+      where: { userId: parseInt(userId) },
+      update: { description, techStack, website },
+      create: { userId: parseInt(userId), description, techStack, website }
+    });
+
+    res.status(200).json({ message: "Company profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating company profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
 export const getUser = async (req, res) => {
   const { userId } = req.params;
+  const { userType } = req.body; // Get userType from request body
 
   try {
     const user = await prisma.user.findUnique({
       where: {
         id: parseInt(userId),  // Convert userId to an integer if passed as string
       },
-      include: {
-        jobSeeker: {   // Include related JobSeeker tuple
-          include: {
-            requiredSkills: {  // Include related skills for the JobSeeker
+      include: userType === 'JobSeeker'
+        ? {
+            jobSeeker: {   // Include related JobSeeker tuple
               include: {
-                skill: true,  // Fetch the skills themselves
+                requiredSkills: {  // Include related skills for the JobSeeker
+                  include: {
+                    skill: true,  // Fetch the skills themselves
+                  },
+                },
               },
             },
-          },
-        },
-      },
+          }
+        : userType === 'Company'
+        ? {
+            company: true,  // Include company details
+          }
+        : {}, // Default case, in case userType is neither
     });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Return only the required data: User, JobSeeker, and Skills
+    // Construct the response based on userType
     const response = {
       name: user.name,
       email: user.email,
-      location: user.jobSeeker.location,
-      experience: user.jobSeeker.experience,
-      salaryExpectation: user.jobSeeker.salaryExpectation,
-      skills: user.jobSeeker?.requiredSkills.map(skillRel => skillRel.skill.name),
-      userType: user.userType
+      userType: user.userType,
+      ...(userType === 'JobSeeker' && user.jobSeeker && {
+        location: user.jobSeeker.location,
+        experience: user.jobSeeker.experience,
+        salaryExpectation: user.jobSeeker.salaryExpectation,
+        skills: user.jobSeeker.requiredSkills.map(skillRel => skillRel.skill.name),
+      }),
+      ...(userType === 'Company' && user.company && {
+        description: user.company.description,
+        techStack: user.company.techStack,
+        website: user.company.website,
+      }),
     };
 
     return res.status(200).json(response);
