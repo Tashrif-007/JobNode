@@ -9,7 +9,8 @@ import {
   ArrowRight,
   CheckCircle,
   X,
-  Upload
+  Upload,
+  Trash2
 } from 'lucide-react';
 
 const PostCard = ({ title, location, description, salaryRange, experience, skills, jobPostId, deadline }) => {
@@ -18,6 +19,7 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
   const [cv, setCv] = useState(null);
   const [alreadyApplied, setAlreadyApplied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     const checkApplication = async () => {
@@ -87,6 +89,36 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setCv(file);
+  };
+
+  // New function to handle job post deletion with refined implementation
+  const handleDelete = async () => {
+    // Confirm before deleting
+    if (!window.confirm("Are you sure you want to delete this job post? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setDeleteLoading(true);
+      const response = await fetch(`http://localhost:3500/post/deletePost/${jobPostId}`, {
+        method: "DELETE",
+        // No token sent as requested
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(data.message || "Job post deleted successfully");
+        // You might want to handle this differently depending on your app's structure
+        window.location.reload();
+      } else {
+        toast.error(data.error || "Failed to delete job post");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the job post");
+      console.error(error);
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   // Split and trim skills, limit to 3 visible skills
@@ -176,6 +208,23 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
                 </button>
               )}
             </>
+          )}
+
+          {/* Refined Delete Button (Only visible to company users) */}
+          {user && user.userType === "Company" && (
+            <button
+              onClick={handleDelete}
+              disabled={deleteLoading}
+              className="w-full flex items-center justify-center bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-75 border border-gray-300"
+            >
+              {deleteLoading ? (
+                "Deleting..."
+              ) : (
+                <>
+                  <Trash2 className="mr-2 w-5 h-5 text-gray-600" /> Remove Job Post
+                </>
+              )}
+            </button>
           )}
         </div>
       </div>
