@@ -299,3 +299,12 @@ export const deleteJobPost = async (req, res) => {
     res.status(500).json({ error: error.message || 'Internal server error' });
   }
 };
+
+export const getSkills = async (req,res) => {
+  try {
+      const skills = await prisma.skills.findMany();
+      res.status(200).json(skills);
+  } catch (error) {
+    
+  }
+}

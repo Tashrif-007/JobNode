@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPost, deleteJobPost, getAllPosts, getPostById, searchFilteredPosts, searchPosts} from '../controllers/post.controller.js';
+import { createPost, deleteJobPost, getAllPosts, getPostById, getSkills, searchFilteredPosts, searchPosts} from '../controllers/post.controller.js';
 
 const postRouter = express.Router();
 
@@ -15,4 +15,5 @@ postRouter.get("/searchFilteredPosts", searchFilteredPosts);
 
 postRouter.delete("/deletePost/:id", deleteJobPost);
 
+postRouter.get("/getSkills", getSkills);
 export default postRouter;
