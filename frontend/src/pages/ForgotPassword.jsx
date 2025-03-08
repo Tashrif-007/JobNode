@@ -38,10 +38,10 @@ const ForgotPassword = () => {
     return (
         <div className='flex justify-center items-center min-h-screen'>
             <form
-                className='flex flex-col gap-4 glassStyle w-[20em] border-4 border-blue-500 rounded p-4'
+                className='flex flex-col gap-4 glassStyle w-[20em] border-4 border-purple-500 rounded p-4'
                 onSubmit={handleSubmit}
             >
-                <h1 className='text-center text-blue-700 text-[28px]'>Reset Password</h1>
+                <h1 className='text-center text-purple-700 text-[28px]'>Reset Password</h1>
                 <TextField
                     id='outlined-basic'
                     label='Email'
@@ -58,7 +58,7 @@ const ForgotPassword = () => {
                     variant='contained'
                     size='large'
                     type='submit'
-                    className='bg-blue-500 hover:bg-blue-700 text-white'
+                    className='bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
                 >
                     Send Reset Email
                 </Button>

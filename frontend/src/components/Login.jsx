@@ -25,7 +25,6 @@ const Login = () => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
     try {
       const response = await fetch("http://localhost:3500/auth/login", {
         method: 'POST',
@@ -34,12 +33,10 @@ const Login = () => {
         },
         body: JSON.stringify(formData),
       });
-
       if (!response.ok) {
         const errData = await response.json();
         throw new Error(errData.message || "Failed to login");
       }
-
       const { token, user } = await response.json();
       localStorage.setItem('token', token);
       navigate("/");
@@ -60,7 +57,14 @@ const Login = () => {
   }));
 
   return (
-    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
+    <div className='flex flex-col justify-center items-center min-h-screen bg-gray-100'>
+      <div className='mb-8 text-center'>
+        <h1 className='text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8D538D] to-[#514ACD]'>
+          Welcome to JobNode!
+        </h1>
+        <p className='text-xl text-gray-700 mt-2'>Your gateway to career opportunities</p>
+      </div>
+      
       <div className='flex items-center bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
         <form
           className='flex flex-col gap-4 w-1/2 p-8'
@@ -100,15 +104,13 @@ const Login = () => {
           <div className='flex items-center gap-2 text-sm mt-4'>
             <div className='w-full h-[1px] bg-gray-300'></div>
           </div>
-          
           <p className='text-sm text-center mt-4'>
-            Don’t have an account?{' '}
+            Don't have an account?{' '}
             <Link to='/signup' className='text-blue-500 hover:underline'>
               Register
             </Link>
           </p>
         </form>
-
         <div className='w-1/2 bg-gray-200 flex items-center justify-center'>
           <img src='/loginImg.jpeg' alt='Illustration' className='w-full h-auto' />
         </div>
