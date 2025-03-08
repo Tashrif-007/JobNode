@@ -2,9 +2,9 @@ jobseeker_id,experience,expected_salary,skills,location,name,email,password
 1,12,124699,"kubernetes, python, ml, react, java, aws",Sylhet,Tashrif,tashrifpro@gmail.com,1234567
 2,14,67484,"express.js, css, java, graphql",Sylhet, Misty, misty@gmail.com, 1234567
 3,11,69158,"sql, azure, tensorflow, java, flask, linux",Tejgaon, Sami, sami@gmail.com, 1234567
-4,7,103472,"data analysis, linux, express.js, html, pytorch",Mohakhali, Nandan, nandan@gmail.com, 1234567
+4,7,103472,"data analysis, linux, express.js, html, pytorch",Mohakhali, Zisun, zisun@gmail.com, 1234567
 5,17,129938,"javascript, python, cloud, ml, typescript, django",Panthapath, Zisun, zisun@gmail.com, 1234567
-6,15,43125,"kubernetes, javascript, django, data analysis",Uttara, Ismail, ismail@gmail.com, 1234567
+6,15,43125,"kubernetes, javascript, django, data analysis",Uttara, Abir, abir@gmail.com, 1234567
 7,3,44468,"data analysis, javascript, sql, tensorflow, css",Tejgaon, Ayon, ayon@gmail.com, 1234567
 8,17,34023,"pytorch, css, tensorflow",Gulshan, Nahian, nahian@gmail.com, 1234567
 9,7,98673,"javascript, flask, aws, sql, ml, tensorflow",Bashundhara, Saimon, saimon@gmail.com, 1234567
