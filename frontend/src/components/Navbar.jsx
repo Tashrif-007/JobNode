@@ -356,7 +356,7 @@ const Navbar = () => {
                     onClick={() => {
                       if(userType==='JobSeeker')
                       navigate("/profile");
-                      else navigate("companyprofile")
+                      else navigate("/companyprofile")
                       handleMenuClose();
                     }}
                     sx={{ 
