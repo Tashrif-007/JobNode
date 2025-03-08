@@ -50,11 +50,27 @@ const About = () => {
             <div className="relative">
               <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-200 to-indigo-100 opacity-50 blur-lg"></div>
               <div className="relative bg-white p-6 rounded-lg shadow-lg">
-                <img 
-                  src="/api/placeholder/400/320" 
-                  alt="Job connections illustration" 
-                  className="w-full h-auto rounded"
-                />
+                <motion.div
+                  whileHover={{ 
+                    scale: 1.05,
+                    transition: { duration: 0.3 }
+                  }}
+                  whileInView={{
+                    opacity: [0, 1],
+                    rotateY: [5, 0],
+                    filter: ["blur(4px)", "blur(0px)"]
+                  }}
+                  transition={{
+                    duration: 1.2,
+                    ease: "easeOut"
+                  }}
+                >
+                  <img 
+                    src="../img2.jpeg" 
+                    alt="Job connections illustration" 
+                    className="w-full h-auto rounded"
+                  />
+                </motion.div>
               </div>
             </div>
           </motion.div>
