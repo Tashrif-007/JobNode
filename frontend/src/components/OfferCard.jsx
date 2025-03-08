@@ -97,7 +97,7 @@ const OfferCard = ({ offer, newStatus }) => {
               <h4 className="text-2xl font-bold mb-1 tracking-wide">{offer.company.name}</h4>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <User className="w-4 h-4" />
-                <span>{offer.application.name}</span>
+                <span>{offer.application.jobPost.position}</span>
               </div>
             </div>
           </div>

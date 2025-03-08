@@ -186,7 +186,7 @@ export const getOfferById = async (req, res) => {
         jobSeekerId: parseInt(jobSeekerId),
       },
       include: {
-        application: true,  // Include application details if necessary
+        application: {include: {jobPost: true}},  // Include application details if necessary
         company: true,      // Include company details if necessary
       },
     });
