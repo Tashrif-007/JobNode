@@ -163,10 +163,8 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
     return null;
   }
 
-  // Split and trim skills, limit to 3 visible skills
+  // Split and trim skills
   const skillsList = skills.split(',').map(skill => skill.trim());
-  const visibleSkills = skillsList.slice(0, 3);
-  const extraSkillsCount = Math.max(0, skillsList.length - 3);
 
   // Determine border color based on deadline
   const getBorderClass = () => {
@@ -217,20 +215,17 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
               <Code className="w-4 h-4 text-orange-600 mr-2" />
               <span className="text-xs font-semibold text-orange-800">SKILLS</span>
             </div>
-            <div className="flex flex-wrap gap-1 items-center h-[52px] overflow-hidden">
-              {visibleSkills.map((skill, index) => (
-                <span 
-                  key={index} 
-                  className="bg-orange-100 text-orange-900 text-[10px] px-2 py-0.5 rounded-full truncate"
-                >
-                  {skill}
-                </span>
-              ))}
-              {extraSkillsCount > 0 && (
-                <span className="text-[10px] text-gray-500 ml-1">
-                  +{extraSkillsCount} more
-                </span>
-              )}
+            <div className="h-[52px] overflow-y-auto">
+              <div className="flex flex-wrap gap-1 items-center">
+                {skillsList.map((skill, index) => (
+                  <span 
+                    key={index} 
+                    className="bg-orange-100 text-orange-900 text-[10px] px-2 py-0.5 rounded-full truncate"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
