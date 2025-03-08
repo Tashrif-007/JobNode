@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { 
@@ -11,7 +11,6 @@ import {
   Code,
   Calendar,
   Check,
-  X
 } from 'lucide-react';
 
 // Success Modal Component
@@ -62,22 +61,93 @@ const CreatePost = () => {
   });
 
   const [skillInput, setSkillInput] = useState("");
+  const [allSkills, setAllSkills] = useState([]);
+  const [filteredSkills, setFilteredSkills] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isLoadingSkills, setIsLoadingSkills] = useState(false);
+  const suggestionsRef = useRef(null);
   const navigate = useNavigate();
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Fetch all skills once when component mounts
+  useEffect(() => {
+    const fetchAllSkills = async () => {
+      try {
+        setIsLoadingSkills(true);
+        const response = await fetch("http://localhost:3500/post/getSkills");
+
+        if (response.ok) {
+          const data = await response.json();
+          setAllSkills(data);
+        }
+      } catch (error) {
+        console.error("Error fetching skills:", error);
+      } finally {
+        setIsLoadingSkills(false);
+      }
+    };
+
+    fetchAllSkills();
+  }, []);
+
+  // Filter skills based on input
+  useEffect(() => {
+    if (skillInput.trim().length < 2) {
+      setFilteredSkills([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const lowerCaseInput = skillInput.trim().toLowerCase();
+    const filtered = allSkills.filter(
+      skill => 
+        skill.name.toLowerCase().includes(lowerCaseInput) && 
+        !formData.skills.includes(skill.name)
+    );
+    
+    setFilteredSkills(filtered);
+    setShowSuggestions(filtered.length > 0);
+  }, [skillInput, allSkills, formData.skills]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSkillAdd = () => {
-    if (skillInput.trim()) {
+    if (skillInput.trim() && !formData.skills.includes(skillInput.trim())) {
       setFormData((prevData) => ({
         ...prevData,
         skills: [...prevData.skills, skillInput.trim()],
       }));
       setSkillInput("");
+      setShowSuggestions(false);
     }
+  };
+
+  const handleSelectSkill = (skillName) => {
+    if (!formData.skills.includes(skillName)) {
+      setFormData((prevData) => ({
+        ...prevData,
+        skills: [...prevData.skills, skillName],
+      }));
+    }
+    setSkillInput("");
+    setShowSuggestions(false);
   };
 
   const handleSkillDelete = (skillToDelete) => {
@@ -91,6 +161,10 @@ const CreatePost = () => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleSkillAdd();
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    } else if (e.key === "ArrowDown" && showSuggestions && filteredSkills.length > 0) {
+      // Allow keyboard navigation in the future
     }
   };
 
@@ -104,7 +178,7 @@ const CreatePost = () => {
         alert("You need to be logged in to create a post!");
         return;
       }
-      console.log(formData.deadline)
+      
       const response = await fetch("http://localhost:3500/post/createPost", {
         method: "POST",
         headers: { 
@@ -132,6 +206,20 @@ const CreatePost = () => {
 
   const handleViewPosts = () => {
     navigate("/posts");
+  };
+
+  // Highlight matching text in suggestions
+  const highlightMatch = (text, query) => {
+    if (!query.trim()) return text;
+    
+    const regex = new RegExp(`(${query.trim()})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part, index) => 
+      regex.test(part) ? 
+        <span key={index} className="bg-yellow-200 font-medium">{part}</span> : 
+        part
+    );
   };
 
   return (
@@ -258,10 +346,47 @@ const CreatePost = () => {
                   type="text"
                   placeholder="Add Skill"
                   value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
+                  onChange={(e) => {
+                    setSkillInput(e.target.value);
+                    if (e.target.value.trim().length >= 2) {
+                      setShowSuggestions(true);
+                    }
+                  }}
+                  onFocus={() => {
+                    if (skillInput.trim().length >= 2 && filteredSkills.length > 0) {
+                      setShowSuggestions(true);
+                    }
+                  }}
                   onKeyDown={handleKeyDown}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
+                
+                {/* Suggestions dropdown */}
+                {showSuggestions && (
+                  <div 
+                    ref={suggestionsRef}
+                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                  >
+                    {isLoadingSkills && allSkills.length === 0 ? (
+                      <div className="p-2 text-center text-gray-500">Loading skills...</div>
+                    ) : filteredSkills.length > 0 ? (
+                      <ul>
+                        {filteredSkills.map((skill) => (
+                          <li 
+                            key={skill.id || skill.name} 
+                            className="px-4 py-2 hover:bg-indigo-50 cursor-pointer transition-colors flex items-center gap-2"
+                            onClick={() => handleSelectSkill(skill.name)}
+                          >
+                            <Code className="w-4 h-4 text-indigo-500" />
+                            <span>{highlightMatch(skill.name, skillInput)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="p-2 text-center text-gray-500">No matching skills found</div>
+                    )}
+                  </div>
+                )}
               </div>
               
               <button
