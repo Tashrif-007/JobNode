@@ -13,10 +13,11 @@ import {
   Trash2,
   AlertTriangle,
   Clock,
-  XCircle
+  XCircle,
+  Building
 } from 'lucide-react';
 
-const PostCard = ({ title, location, description, salaryRange, experience, skills, jobPostId, deadline, onDelete }) => {
+const PostCard = ({ title, location, companyName, salaryRange, experience, skills, jobPostId, deadline, onDelete }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -183,9 +184,15 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
         <div className="flex justify-between items-center mb-4">
           <div className="flex-grow">
             <h3 className="text-2xl font-bold text-gray-800 truncate">{title}</h3>
-            <div className="flex items-center text-gray-500 mt-1">
-              <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-              <span className="text-sm truncate">{location}</span>
+            <div className="flex flex-col gap-1 mt-1">
+              <div className="flex items-center text-gray-600">
+                <Building className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="text-sm font-medium truncate">{companyName}</span>
+              </div>
+              <div className="flex items-center text-gray-500">
+                <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="text-sm truncate">{location}</span>
+              </div>
             </div>
           </div>
           <div className={`${isDeadlineExpired ? 'bg-gray-200' : 'bg-purple-100'} rounded-full p-3 ml-2`}>
@@ -293,7 +300,10 @@ const PostCard = ({ title, location, description, salaryRange, experience, skill
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl relative">
             <div className="p-6 border-b flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Apply for {title}</h2>
+              <div>
+                <h2 className="text-2xl font-bold">Apply for {title}</h2>
+                <p className="text-gray-600 text-sm mt-1">at {companyName}</p>
+              </div>
               <button 
                 onClick={() => setOpen(false)}
                 className="text-gray-500 hover:bg-gray-100 rounded-full p-1"
