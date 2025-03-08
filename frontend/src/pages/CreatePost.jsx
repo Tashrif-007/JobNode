@@ -322,17 +322,20 @@ const CreatePost = () => {
             </div>
 
             <div className="relative">
+              <label htmlFor="deadline" className="absolute -top-2 left-3 px-1 text-xs font-medium text-purple-600 bg-white">
+                Deadline
+              </label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <Calendar className="w-5 h-5 text-gray-400" />
+              <Calendar className="w-5 h-5 text-gray-400" />
               </div>
               <input
-                type="date"
-                name="deadline"
-                placeholder="Deadline *"
-                value={formData.deadline}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-                required
+              id="deadline"
+              type="date"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleChange}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 pt-3"
+              required
               />
             </div>
             
