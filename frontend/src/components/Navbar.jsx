@@ -186,29 +186,32 @@ const Navbar = () => {
               >
                 CHATS
               </Button>
+              {userType === 'JobSeeker' && 
               <Button 
                 color="inherit" 
                 component={Link} 
                 to="/recommendations"
                 sx={{ 
-                  textTransform: 'none', 
-                  fontWeight: 500,
-                  borderRadius: '25px',
-                  padding: '8px 18px',
-                  color: '#fff',
-                  fontSize: '0.95rem',
-                  fontFamily: '"Poppins", sans-serif',
-                  letterSpacing: '0.8px',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 3px 8px rgba(155, 125, 220, 0.2)'
-                  }
-                }}
-              >
-                RECOMMENDATIONS
-              </Button>
+                textTransform: 'none', 
+                fontWeight: 500,
+                borderRadius: '25px',
+                padding: '8px 18px',
+                color: '#fff',
+                fontSize: '0.95rem',
+                fontFamily: '"Poppins", sans-serif',
+                letterSpacing: '0.8px',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 3px 8px rgba(155, 125, 220, 0.2)'
+               }
+            }
+          }
+  >
+    RECOMMENDATIONS
+  </Button>
+}
               {userType === 'JobSeeker' &&
                 <Button 
                   color="inherit" 
@@ -353,7 +356,7 @@ const Navbar = () => {
                     onClick={() => {
                       if(userType==='JobSeeker')
                       navigate("/profile");
-                      else navigate("companyprofile")
+                      else navigate("/companyprofile")
                       handleMenuClose();
                     }}
                     sx={{ 

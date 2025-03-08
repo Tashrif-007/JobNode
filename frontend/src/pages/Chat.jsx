@@ -54,6 +54,12 @@ const Chat = () => {
   };
 
   const handleDeleteConversation = async (conversationId) => {
+    // Check if user is a company using correct property
+    if (user?.userType !== 'Company') {
+      alert("Only companies can delete conversations");
+      return;
+    }
+    
     try {
       const response = await fetch(`http://localhost:3500/conversation/delete/${conversationId}`, {
         method: 'DELETE',
@@ -201,21 +207,23 @@ const Chat = () => {
                       <div className="flex justify-between items-center">
                         <span className="font-medium truncate">{conv.name}</span>
                         
-                        {/* 3-Dot Menu for Conversation */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent selecting conversation
-                            setOpenMenuConversationId(openMenuConversationId === conv.id ? null : conv.id);
-                          }}
-                          className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <FaEllipsisV size={14} />
-                        </button>
+                        {/* 3-Dot Menu for Conversation - Show only for companies */}
+                        {user?.userType === 'Company' && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent selecting conversation
+                              setOpenMenuConversationId(openMenuConversationId === conv.id ? null : conv.id);
+                            }}
+                            className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <FaEllipsisV size={14} />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {openMenuConversationId === conv.id && (
+                  {openMenuConversationId === conv.id && user?.userType === 'Company' && (
                     <div className="absolute right-0 top-full mt-1 z-10">
                       <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
                         <button
