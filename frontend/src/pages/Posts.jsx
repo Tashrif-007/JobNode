@@ -86,7 +86,7 @@ const Posts = () => {
   useEffect(() => {
     fetchAllPosts();
   }, []);
-
+  console.log(posts)
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
@@ -208,7 +208,8 @@ const Posts = () => {
                   key={post.id}
                   title={post.name}
                   location={post.location}
-                  description={post.description || "No description available."}
+                  companyName={post.user.name}
+                  position={post.position}
                   salaryRange={`${post.salary}`}
                   experience={`${post.experience} years`}
                   skills={
