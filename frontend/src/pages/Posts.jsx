@@ -209,6 +209,7 @@ const Posts = () => {
                   title={post.name}
                   location={post.location}
                   companyName={post.user.name}
+                  position={post.position}
                   salaryRange={`${post.salary}`}
                   experience={`${post.experience} years`}
                   skills={

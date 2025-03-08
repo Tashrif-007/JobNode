@@ -14,10 +14,11 @@ import {
   AlertTriangle,
   Clock,
   XCircle,
-  Building
+  Building,
+  UserCircle
 } from 'lucide-react';
 
-const PostCard = ({ title, location, companyName, salaryRange, experience, skills, jobPostId, deadline, onDelete }) => {
+const PostCard = ({ title, location, companyName, position, salaryRange, experience, skills, jobPostId, deadline, onDelete }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -192,6 +193,10 @@ const PostCard = ({ title, location, companyName, salaryRange, experience, skill
               <div className="flex items-center text-gray-500">
                 <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
                 <span className="text-sm truncate">{location}</span>
+              </div>
+              <div className="flex items-center text-gray-500">
+                <UserCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="text-sm truncate">{position}</span>
               </div>
             </div>
           </div>
