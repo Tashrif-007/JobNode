@@ -11,7 +11,7 @@ const RecommendationPage = () => {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-
+  console.log(recommendedJobs, filteredJobs)
   useEffect(() => {
     if (user?.userType === "JobSeeker") {
       fetchRecommendedJobs();
@@ -25,7 +25,7 @@ const RecommendationPage = () => {
     } else {
       const lowercasedSearch = searchTerm.toLowerCase();
       const filtered = recommendedJobs.filter(
-        job => job.companyName?.toLowerCase().includes(lowercasedSearch)
+        job => job.user.name?.toLowerCase().includes(lowercasedSearch)
       );
       setFilteredJobs(filtered);
     }
@@ -102,7 +102,7 @@ const RecommendationPage = () => {
                         key={job.jobPostId}
                         jobPostId={job.jobPostId}
                         title={job.name}
-                        companyName={job.companyName}
+                        companyName={job.user.name}
                         position={job.position}
                         location={job.location}
                         salaryRange={job.salary}

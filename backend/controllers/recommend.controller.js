@@ -22,6 +22,7 @@ export const getRecommendedJobs = async (req, res) => {
             },
             include: {
                 requiredSkills: { include: { skill: true } },
+                user: true,
               },
         });
 
