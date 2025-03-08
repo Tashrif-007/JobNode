@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import PostCard from './PostCard'; // Assuming PostCard is imported from your code
 import { Link } from 'react-router-dom';
-
+import { useAuth } from '../context/AuthContext';
 const LatestJobPosts = () => {
   const [latestJobs, setLatestJobs] = useState([]);
-
+  const {user} = useAuth();
   // Define animation variants
   const containerVariants = {
     hidden: {},
@@ -18,13 +18,21 @@ const LatestJobPosts = () => {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
   };
+  const userType = user?.userType;
+
 
   useEffect(() => {
     const fetchLatestJobs = async () => {
       try {
         const response = await fetch('http://localhost:3500/post/getAllPosts');
         const data = await response.json();
-        const latest = data.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
+        let filteredData = data;
+        
+        // If current user is a Company, filter to show only their own job posts
+        if (userType === 'Company') {
+          filteredData = data.filter(job => job.user.name === user.name);
+        }
+        const latest = filteredData.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
         if (response.ok) {
           setLatestJobs(latest);
         } else {
@@ -36,7 +44,7 @@ const LatestJobPosts = () => {
     };
 
     fetchLatestJobs();
-  }, []);
+  }, [user]);
 
   return (
     <section className="container mx-auto py-12">
@@ -72,7 +80,8 @@ const LatestJobPosts = () => {
               <PostCard
                 title={job.title}
                 location={job.location}
-                description={job.description}
+                position={job.position}
+                companyName={job.user.name}
                 salaryRange={job.salary}
                 experience={job.experience}
                 skills={job.requiredSkills.map((skill) => skill.skill.name).join(', ')}
