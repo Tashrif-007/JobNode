@@ -56,22 +56,30 @@ const JobApplications = () => {
   useEffect(() => {
     const filterApplications = () => {
       let filtered = applications;
-
+  
       if (filterStatus !== "All") {
         filtered = filtered.filter((app) => app.status === filterStatus);
       }
-
+  
       if (searchQuery.trim() !== "") {
-        filtered = filtered.filter((app) =>
-          app.userName.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        if (user.userType === "Company") {
+          // Companies search by job seeker name
+          filtered = filtered.filter((app) =>
+            app.userName.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        } else if (user.userType === "JobSeeker") {
+          // Job seekers search by company name
+          filtered = filtered.filter((app) =>
+            app.jobPost?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }
       }
-
+  
       setFilteredApplications(filtered);
     };
-
+  
     filterApplications();
-  }, [filterStatus, searchQuery, applications]);
+  }, [filterStatus, searchQuery, applications, user?.userType]);
 
   const updateApplicationStatus = (applicationId, newStatus) => {
     setApplications((prevApps) =>

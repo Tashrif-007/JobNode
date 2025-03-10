@@ -19,21 +19,25 @@ const JobSeekerProfile = () => {
   console.log(profileData)
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if(name==='salaryExpectation') {
-      const float = parseFloat(value);
+    
+    if (name === 'salaryExpectation') {
       setProfileData({
         ...profileData,
-        [name]: float
-      })
-    }
-    else {
+        [name]: parseFloat(value) || 0.0, // Ensure it's a valid float
+      });
+    } else if (name === 'experience') {
       setProfileData({
         ...profileData,
-        [name]: value
+        [name]: parseInt(value) || 0, // Ensure it's a valid integer
+      });
+    } else {
+      setProfileData({
+        ...profileData,
+        [name]: value,
       });
     }
-    
   };
+  
 
   const handleSkillChange = (index, value) => {
     const updatedSkills = [...profileData.skills];
@@ -218,27 +222,7 @@ const JobSeekerProfile = () => {
             </div>
             
             <div className="p-8 relative">
-              {/* <div className="mb-6">
-                <div className="text-sm text-slate-500 mb-2 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"></path>
-                    <path d="M2 10h20"></path>
-                  </svg>
-                  Job Title
-                </div>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="jobTitle"
-                    value={profileData.jobTitle}
-                    onChange={handleInputChange}
-                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
-                    placeholder="Job Title"
-                  />
-                ) : (
-                  <div className="text-base font-medium text-slate-900 pl-6">{profileData.jobTitle}</div>
-                )}
-              </div> */}
+              
               
               <div className="mb-6">
                 <div className="text-sm text-slate-500 mb-2 flex items-center gap-2">
@@ -316,7 +300,7 @@ const JobSeekerProfile = () => {
                   {isEditing ? (
                     <input
                       type="number"
-                      name="yearsExperience"
+                      name="experience"
                       value={profileData.experience}
                       onChange={handleInputChange}
                       className="p-2 rounded-lg border border-slate-300 text-slate-800 w-16 text-center"
@@ -334,73 +318,6 @@ const JobSeekerProfile = () => {
               </div>
             </div>
             
-            {/* Description Card */}
-            {/* <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
-              <div className="mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="13" x2="8" y2="13"></line>
-                      <line x1="16" y1="17" x2="8" y2="17"></line>
-                      <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                  </div>
-                  <div className="text-xl font-semibold text-slate-900">Profile Description</div>
-                </div>
-              </div>
-              
-              <div className="bg-slate-50 p-6 rounded-xl">
-                {isEditing ? (
-                  <textarea
-                    name="description"
-                    value={profileData.description}
-                    onChange={handleInputChange}
-                    className="p-4 rounded-lg border border-slate-300 text-slate-800 w-full h-32"
-                    placeholder="Write about your professional background, expertise, and what you're looking for"
-                  />
-                ) : (
-                  <div className="text-slate-700">{profileData.description}</div>
-                )}
-              </div> */}
-            {/* </div> */}
-            
-            {/* Experience Card */}
-            {/* <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
-              <div className="mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-purple-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                  </div>
-                  <div className="text-xl font-semibold text-slate-900">Experience</div>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-8 bg-slate-50 p-6 rounded-xl">
-                <div className="text-4xl font-bold text-purple-600 pr-8 border-r-2 border-slate-200">
-                  {isEditing ? (
-                    <input
-                      type="number"
-                      name="yearsExperience"
-                      value={profileData.yearsExperience}
-                      onChange={handleInputChange}
-                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-16 text-center"
-                      min="0"
-                    />
-                  ) : (
-                    profileData.experience
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className="text-lg font-semibold mb-1">Years of Professional Experience</div>
-                  <div className="text-sm text-slate-500">Working as a Senior Developer with expertise in full-stack development and leading technical teams on various projects.</div>
-                </div>
-              </div>
-            </div> */}
             
             {/* Skills Card */}
             <div className="bg-white rounded-2xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all">
