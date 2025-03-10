@@ -9,11 +9,13 @@ import {
   MapPin,
   DollarSign,
   Clock,
-  Code
+  Code,
+  X
 } from 'lucide-react';
 
 const Posts = () => {
-  const [posts, setPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState([]); // Store all posts
+  const [filteredPosts, setFilteredPosts] = useState([]); // Store filtered posts
   const [search, setSearch] = useState("");
   const [salary, setSalary] = useState("");
   const [location, setLocation] = useState("");
@@ -24,42 +26,22 @@ const Posts = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const userId = user?.userId;
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      const queryParams = new URLSearchParams();
 
-      if (search) queryParams.append("search", search);
-      if (salary) queryParams.append("salary", salary);
-      if (location) queryParams.append("location", location);
-      if (experience) queryParams.append("experience", experience);
-      if (skills) queryParams.append("skills", skills);
-
-      const response = await fetch(`http://localhost:3500/post/searchFilteredPosts?${queryParams}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      setPosts(data);
-    } catch (error) {
-      console.error("Error searching posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch all posts only once
   const fetchAllPosts = async () => {
     try {
       setLoading(true);
-      if(user?.userType==='JobSeeker') {
+      if(user?.userType === 'JobSeeker') {
         const res = await fetch("http://localhost:3500/post/getAllPosts");
         const data = await res.json();
-        setPosts(data)
+        setAllPosts(data);
+        setFilteredPosts(data); // Initialize filtered posts with all posts
       }
       else {
         const res = await fetch(`http://localhost:3500/post/getPostById/${userId}`);
         const data = await res.json();
-        setPosts(data)
+        setAllPosts(data);
+        setFilteredPosts(data); // Initialize filtered posts with all posts
       }
     } catch (error) {
       console.error(error.message);
@@ -68,9 +50,82 @@ const Posts = () => {
     }
   };
 
+  // Apply filters whenever filter values change
+  useEffect(() => {
+    applyFilters();
+  }, [search, salary, location, experience, skills]);
+
+  // Initial fetch of all posts
+  useEffect(() => {
+    if (user?.userId) {
+      fetchAllPosts();
+    }
+  }, [user]);
+
+  const applyFilters = () => {
+    let filtered = [...allPosts];
+
+    // Filter by search term (job title, company name, position)
+    if (search.trim() !== "") {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter(post => 
+        post.name?.toLowerCase().includes(searchLower) ||
+        post.position?.toLowerCase().includes(searchLower) ||
+        post.user?.name?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filter by salary range
+    if (salary.trim() !== "") {
+      const salaryValue = parseFloat(salary);
+      if (!isNaN(salaryValue)) {
+        filtered = filtered.filter(post => 
+          post.salary && parseFloat(post.salary) >= salaryValue
+        );
+      }
+    }
+
+    // Filter by location
+    if (location.trim() !== "") {
+      const locationLower = location.toLowerCase();
+      filtered = filtered.filter(post => 
+        post.location?.toLowerCase().includes(locationLower)
+      );
+    }
+
+    // Filter by experience
+    if (experience.trim() !== "") {
+      const expValue = parseFloat(experience);
+      if (!isNaN(expValue)) {
+        filtered = filtered.filter(post => 
+          post.experience && parseFloat(post.experience) <= expValue
+        );
+      }
+    }
+
+    // Filter by skills
+    if (skills.trim() !== "") {
+      const skillsArray = skills.toLowerCase().split(',').map(s => s.trim());
+      filtered = filtered.filter(post => {
+        if (!post.requiredSkills || post.requiredSkills.length === 0) return false;
+        
+        const postSkills = post.requiredSkills.map(reqSkill => 
+          reqSkill.skill.name.toLowerCase()
+        );
+        
+        // Check if any of the required skills match any of the filter skills
+        return skillsArray.some(skill => 
+          postSkills.some(postSkill => postSkill.includes(skill))
+        );
+      });
+    }
+
+    setFilteredPosts(filtered);
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      fetchPosts();
+      applyFilters();
     }
   };
 
@@ -80,13 +135,9 @@ const Posts = () => {
     setExperience("");
     setLocation("");
     setSkills("");
-    fetchAllPosts();
+    setFilteredPosts(allPosts); // Reset to show all posts
   };
 
-  useEffect(() => {
-    fetchAllPosts();
-  }, []);
-  console.log(posts)
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
@@ -126,8 +177,16 @@ const Posts = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
+              {search && (
+                <button 
+                  onClick={() => setSearch("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
             </div>
             
             <div className="relative">
@@ -136,11 +195,19 @@ const Posts = () => {
               </div>
               <input
                 type="text"
-                placeholder="Salary (e.g. 100-200)"
+                placeholder="Minimum Salary"
                 value={salary}
                 onChange={(e) => setSalary(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
+              {salary && (
+                <button 
+                  onClick={() => setSalary("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
             </div>
             
             <div className="relative">
@@ -152,8 +219,16 @@ const Posts = () => {
                 placeholder="Experience (years)"
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
+              {experience && (
+                <button 
+                  onClick={() => setExperience("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
             </div>
             
             <div className="relative">
@@ -165,8 +240,16 @@ const Posts = () => {
                 placeholder="Location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
+              {location && (
+                <button 
+                  onClick={() => setLocation("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
             </div>
             
             <div className="relative">
@@ -178,16 +261,17 @@ const Posts = () => {
                 placeholder="Skills (comma separated)"
                 value={skills}
                 onChange={(e) => setSkills(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
+              {skills && (
+                <button 
+                  onClick={() => setSkills("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
             </div>
-            
-            <button
-              onClick={fetchPosts}
-              className="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 transition-all duration-300"
-            >
-              {loading ? "Searching..." : "Search"}
-            </button>
           </div>
         </div>
 
@@ -201,9 +285,9 @@ const Posts = () => {
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
             </div>
-          ) : posts.length > 0 ? (
+          ) : filteredPosts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post) => (
+              {filteredPosts.map((post) => (
                 <PostCard
                   key={post.id}
                   title={post.name}
@@ -213,10 +297,9 @@ const Posts = () => {
                   salaryRange={`${post.salary}`}
                   experience={`${post.experience} years`}
                   skills={
-                    post.requiredSkills.length > 0
+                    post.requiredSkills && post.requiredSkills.length > 0
                       ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
                       : "No skills listed"
-                    
                   }
                   deadline={post.deadline}
                   jobPostId={post.id}
